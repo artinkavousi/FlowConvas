@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARTINOS Studio</title>
+    <script>
+      // Suppress benign ResizeObserver loop errors (same guard PANELFLOW uses).
+      const roErr = /ResizeObserver loop/;
+      window.addEventListener('error', function (e) {
+        if (roErr.test(e.message)) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          const overlay = document.querySelector('vite-error-overlay');
+          if (overlay) overlay.style.display = 'none';
+        }
+      });
+      const originalError = window.onerror;
+      window.onerror = function (msg, src, ln, col, err) {
+        if (typeof msg === 'string' && roErr.test(msg)) return true;
+        if (originalError) return originalError(msg, src, ln, col, err);
+        return false;
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

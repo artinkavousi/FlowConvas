@@ -1,0 +1,46 @@
+/* tokens.css — ported verbatim from PACKAGES/PANELFLOW/tokens/tokens.css.
+   PANELFLOW visual identity (dark glass, teal #2dd4bf, dot-grid). Do not restyle. */
+:root {
+
+  /* colors */
+  --color-bg: #0a0a0a;
+  --color-surface: #171717;
+  --color-surface-raised: #262626;
+  --color-surface-overlay: rgba(0, 0, 0, 0.4);
+  --color-border: rgba(255, 255, 255, 0.10);
+  --color-border-soft: rgba(255, 255, 255, 0.05);
+  --color-text: #ffffff;
+  --color-text-muted: #737373;
+  --color-text-soft: rgba(255, 255, 255, 0.45);
+  --color-accent: #2dd4bf;
+  --color-accent-dim: rgba(45, 212, 191, 0.20);
+  --color-accent-glow: rgba(20, 184, 166, 0.60);
+  --color-success: #4ade80;
+  --color-info: #2563eb;
+
+  /* spacing / radius / blur */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* shadows */
+  --shadow-panel: 0 24px 24px -12px rgba(0, 0, 0, 0.25);
+  --shadow-drag: 0 32px 40px -8px rgba(0, 0, 0, 0.55);
+
+  /* spacing / radius / blur */
+  --blur-glass: 20px;
+  --grid-cell: 40px;
+
+  /* colors */
+  --grid-dot: rgba(255, 255, 255, 0.10);
+}
+
+/* shared glass surface used across panels */
+.glass-panel {
+  background: var(--color-surface-overlay);
+  backdrop-filter: blur(var(--blur-glass));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}

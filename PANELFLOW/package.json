@@ -1,0 +1,74 @@
+{
+  "name": "@artinos/panelflow",
+  "private": true,
+  "version": "0.1.0",
+  "description": "High-end reusable panel system for building interactive visual tools, control panels, and editor workspaces",
+  "type": "module",
+  "main": "dist/panelflow.cjs.js",
+  "module": "dist/panelflow.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/panelflow.es.js",
+      "require": "./dist/panelflow.cjs.js"
+    },
+    "./styles": "./dist/panelflow.css",
+    "./frost": "./src/lib/tweakpane_frost/frost-tweakpane.js"
+  },
+  "files": [
+    "dist",
+    "src/lib/tweakpane_frost"
+  ],
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-tooltip": "^1.2.10",
+    "@xyflow/react": "^12.11.0",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "dagre": "^0.8.5",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "tailwind-merge": "^3.6.0",
+    "tweakpane": "^4.0.5",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@google/genai": "^2.4.0",
+    "@microsoft/api-extractor": "^7.58.9",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/dagre": "^0.7.54",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "autoprefixer": "^10.4.21",
+    "dockview": "^6.6.1",
+    "dockview-core": "^6.6.1",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.25.0",
+    "express": "^4.21.2",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "tailwindcss": "^4.1.14",
+    "three": "^0.184.0",
+    "three-stdlib": "^2.36.1",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3",
+    "vite-plugin-dts": "^5.0.2"
+  }
+}

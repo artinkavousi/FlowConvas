@@ -1,0 +1,6 @@
+/* ARTINOS Studio — pulls in the PANELFLOW design system (Tailwind v4 + tokens + glass
+   identity) and points Tailwind at PANELFLOW source so its utility classes compile (ADR-4). */
+@import "../../PANELFLOW/src/globals.css";
+
+@source "../../PANELFLOW/src";
+@source ".";

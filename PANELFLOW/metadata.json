@@ -1,0 +1,6 @@
+{
+  "name": "Project Workspace",
+  "description": "A clean workspace ready for importing and continuing work on a given project.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

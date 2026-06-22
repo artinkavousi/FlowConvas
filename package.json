@@ -1,0 +1,8 @@
+{
+  "name": "artinos",
+  "private": true,
+  "workspaces": [
+    "PANELFLOW",
+    "STUDIO"
+  ]
+}

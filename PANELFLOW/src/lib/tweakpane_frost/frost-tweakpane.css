@@ -1,0 +1,755 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FROST TWEAKPANE — Design Tokens & CSS Variables
+   
+   Edit these values to customize the entire Tweakpane appearance.
+   All components inherit from these base variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.frost-tweakpane {
+  /* ─── COLORS ─────────────────────────────────────────────────────────────── */
+  --frost-accent: #6ec9b8;                          /* Primary accent color (teal) */
+  --frost-accent-glow: rgba(110, 201, 184, 0.35);  /* Glow/shadow color for accent */
+  
+  /* ─── GLASS EFFECTS ──────────────────────────────────────────────────────── */
+  --frost-glass-bg: rgba(255, 255, 255, 0.03);         /* Very neutral, ultra-low opacity */
+  --frost-glass-border: rgba(255, 255, 255, 0.08);     /* Soft, subtle border */
+  --frost-glass-border-subtle: rgba(255,255,255,0.04); /* Barely visible structure */
+  --frost-glass-highlight: rgba(255, 255, 255, 0.08);     /* Soft top highlight */
+  --frost-glass-shadow: rgba(0,0,0,0.1);               /* Very soft depth */
+  
+  /* ─── NOISE PATTERN (SVG) ────────────────────────────────────────────────── */
+  --frost-noise-pattern: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  
+  /* ─── INPUTS ─────────────────────────────────────────────────────────────── */
+  --frost-input-bg: rgba(0,0,0,0.25);              /* Input field background */
+  
+  /* ─── TEXT ───────────────────────────────────────────────────────────────── */
+  --frost-text: rgba(255,255,255,0.92);            /* Primary text color */
+  --frost-text-muted: rgba(255,255,255,0.45);      /* Secondary/muted text */
+  
+  /* ─── BORDER RADIUS ──────────────────────────────────────────────────────── */
+  --frost-radius: 12px;                            /* Large radius (folders, panels) */
+  --frost-radius-sm: 8px;                          /* Medium radius (buttons, tabs) */
+  --frost-radius-xs: 5px;                          /* Small radius (inputs) */
+  
+  /* ─── BASE STYLES ────────────────────────────────────────────────────────── */
+  width: 100%;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+}
+
+.frost-tweakpane__pane { padding: 0; }
+
+/* RESET */
+.frost-tweakpane .tp-dfwv,
+.frost-tweakpane .tp-rotv {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+}
+/* Aggressively hide any title/header elements */
+.frost-tweakpane .tp-rotv_h,
+.frost-tweakpane .tp-rotv_t,
+.frost-tweakpane .tp-dfwv_h,
+.frost-tweakpane .tp-dfwv_t { 
+  display: none !important; 
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.frost-tweakpane .tp-rotv_c { padding: 0 !important; }
+
+/* Hide any orphan text nodes that might show "Error" or unwanted content */
+.frost-tweakpane > div:not(.tp-dfwv):not(.tp-rotv):not(.frost-tweakpane__pane) {
+  display: none !important;
+}
+/* Removed global before/after reset for .frost-tweakpane to allow noise texture */
+.frost-tweakpane::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* TABS */
+.frost-tweakpane .tp-tabv { background: transparent !important; }
+.frost-tweakpane .tp-tabv_i {
+  display: none !important;
+  width: 0 !important;
+  opacity: 0 !important;
+}
+.frost-tweakpane .tp-tabv_t {
+  position: relative !important;
+  display: flex !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  background: var(--frost-tab-bg, rgba(0,0,0,0.3)) !important;
+  border-radius: var(--frost-radius-sm) !important;
+  margin-bottom: 12px !important;
+  overflow: visible !important;
+}
+/* Frosted noise overlay on tabs */
+.frost-tweakpane .tp-tabv_t::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 150px 150px !important;
+  border-radius: var(--frost-radius-sm) !important;
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+  mix-blend-mode: overlay !important;
+  z-index: 0 !important;
+}
+.frost-tweakpane .tp-tabv_t > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+.frost-tweakpane .tp-tabv_c {
+  overflow: visible !important;
+}
+.frost-tweakpane .tp-tbiv_b {
+  flex: 1 !important;
+  padding: var(--frost-tab-padding, 10px) 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--frost-text-muted) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.frost-tweakpane .tp-tbiv_b:hover {
+  color: var(--frost-text) !important;
+  background: rgba(255,255,255,0.03) !important;
+}
+.frost-tweakpane .tp-tbiv_b.tp-tbiv_b-sel {
+  background: var(--frost-tab-selected-bg, var(--frost-accent-glow)) !important;
+  color: var(--frost-accent) !important;
+}
+.frost-tweakpane .tp-tabv_c,
+.frost-tweakpane .tp-tabv_i { padding: 0 !important; background: transparent !important; }
+
+/* FOLDERS */
+.frost-tweakpane .tp-fldv {
+  position: relative !important;
+  background: var(--frost-glass-bg) !important;
+  backdrop-filter: blur(40px) saturate(100%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(100%) !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius) !important;
+  margin-bottom: var(--frost-folder-margin-bottom, 8px) !important;
+  overflow: visible !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: background 0.2s, border-color 0.2s !important;
+}
+/* Frosted noise overlay on folders */
+.frost-tweakpane .tp-fldv::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 200px 200px !important;
+  border-radius: var(--frost-radius) !important;
+  opacity: 0.4 !important;
+  pointer-events: none !important;
+  mix-blend-mode: overlay !important;
+  z-index: 0 !important;
+}
+.frost-tweakpane .tp-fldv > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+.frost-tweakpane .tp-fldv:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--frost-glass-border) !important;
+}
+.frost-tweakpane .tp-fldv:last-child { margin-bottom: 0 !important; }
+.frost-tweakpane .tp-fldv:hover { border-color: var(--frost-glass-border) !important; }
+
+/* Folder Title Bar */
+.frost-tweakpane .tp-fldv_t {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: var(--frost-folder-title-padding, 10px) 12px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--frost-glass-border-subtle) !important;
+  cursor: pointer !important;
+  min-height: 38px !important;
+}
+.frost-tweakpane .tp-fldv_t:hover { background: rgba(255,255,255,0.02) !important; }
+
+/* Folder Title Text */
+.frost-tweakpane .tp-fldv_b {
+  flex: 1 !important;
+  font-size: var(--frost-folder-title-font-size, 10px) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: var(--frost-text) !important;
+  background: none !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.2 !important;
+  height: auto !important;
+}
+
+/* Folder Collapse Icon — use default Tweakpane icon */
+.frost-tweakpane .tp-fldv_m {
+  opacity: 0.5 !important;
+  transition: opacity 0.15s ease !important;
+}
+.frost-tweakpane .tp-fldv_t:hover .tp-fldv_m {
+  opacity: 0.8 !important;
+}
+
+/* Folder Content - minimal padding */
+.frost-tweakpane .tp-fldv_c {
+  padding: 6px 8px !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+/* Nested folders */
+.frost-tweakpane .tp-fldv .tp-fldv {
+  background: rgba(0,0,0,0.15) !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+}
+
+/* LABELS & CONTROL ROWS */
+.frost-tweakpane .tp-lblv {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin-bottom: 4px !important;
+  padding: 0 !important;
+  min-height: 22px !important;
+}
+.frost-tweakpane .tp-lblv:last-child { margin-bottom: 0 !important; }
+/* Label width - increased for better readability */
+.frost-tweakpane .tp-lblv_l {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  color: var(--frost-text-muted) !important;
+  width: 60px !important;
+  min-width: 60px !important;
+  flex-shrink: 0 !important;
+  text-transform: capitalize !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  margin-right: 0px !important;
+}
+.frost-tweakpane .tp-lblv_v { 
+  flex: 1 1 auto !important; 
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+/* TEXT INPUTS */
+.frost-tweakpane .tp-txtv_i {
+  position: relative !important;
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 100px 100px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--frost-radius-xs) !important;
+  color: var(--frost-accent) !important;
+  font-family: 'DM Mono', 'SF Mono', monospace !important;
+  font-size: 11px !important;
+  padding: 5px 8px !important;
+  width: 100% !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+.frost-tweakpane .tp-txtv_i:hover { border-color: var(--frost-glass-border-subtle) !important; }
+.frost-tweakpane .tp-txtv_i:focus {
+  border-color: var(--frost-accent) !important;
+  box-shadow: 0 0 0 2px var(--frost-accent-glow) !important;
+  outline: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDERS — FROST Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Slider row layout */
+.frost-tweakpane .tp-sldtxtv { 
+  display: flex !important; 
+  align-items: center !important; 
+  gap: 0 !important;
+  width: 100% !important;
+}
+
+/* Slider track wrapper - takes maximum space */
+.frost-tweakpane .tp-sldtxtv_s { 
+  flex: 1 1 100% !important; 
+  min-width: 0 !important;
+  overflow: visible !important;
+  margin-right: 6px !important;
+}
+
+/* Slider container */
+.frost-tweakpane .tp-sldv {
+  height: 4px !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Track background */
+.frost-tweakpane .tp-sldv_t {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 4px !important;
+  height: 4px !important;
+  overflow: visible !important;
+  position: relative !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.frost-tweakpane .tp-sldv_t::before {
+  display: none !important;
+}
+
+/* Fill bar */
+.frost-tweakpane .tp-sldv_k {
+  background: linear-gradient(90deg, 
+    var(--frost-slider-start, #3d8b7a) 0%,
+    var(--frost-slider-mid, #5ee8b7) 50%,
+    var(--frost-slider-end, #a8ffac) 100%
+  ) !important;
+  border-radius: 4px !important;
+  height: 100% !important;
+  position: relative !important;
+  overflow: visible !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.frost-tweakpane .tp-sldv_k::before {
+  display: none !important;
+}
+
+/* Thumb handle - perfectly centered on track */
+.frost-tweakpane .tp-sldv_k::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  right: -7px !important;
+  top: 50% !important;
+  margin-top: -7px !important;
+  transform: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border: 2px solid var(--frost-accent, #6ec9b8) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+
+/* Value input container - tiny */
+.frost-tweakpane .tp-sldtxtv_t { 
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+}
+
+/* Value input field */
+.frost-tweakpane .tp-sldtxtv_t .tp-txtv_i { 
+  text-align: right !important; 
+  padding: 0 !important;
+  font-size: 9px !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--frost-accent) !important;
+  font-family: 'DM Mono', monospace !important;
+  width: 100% !important;
+}
+
+/* COLOR PICKER */
+.frost-tweakpane .tp-colswtxtv { display: flex !important; align-items: center !important; gap: 6px !important; }
+.frost-tweakpane .tp-colswtxtv_b,
+.frost-tweakpane .tp-colswv_b {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: var(--frost-radius-xs) !important;
+  border: 1px solid var(--frost-glass-border) !important;
+  cursor: pointer !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  flex-shrink: 0 !important;
+}
+.frost-tweakpane .tp-colswtxtv_t { flex: 1 !important; }
+.frost-tweakpane .tp-colpv {
+  position: relative !important;
+  background: rgba(12,16,20,0.75) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid var(--frost-glass-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5) !important;
+  padding: 10px !important;
+}
+/* Frosted noise overlay on color picker popup */
+.frost-tweakpane .tp-colpv::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 180px 180px !important;
+  border-radius: 10px !important;
+  opacity: 0.35 !important;
+  pointer-events: none !important;
+  mix-blend-mode: overlay !important;
+  z-index: 0 !important;
+}
+.frost-tweakpane .tp-colpv > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+.frost-tweakpane .tp-colpv_h { border-radius: 4px !important; }
+.frost-tweakpane .tp-colpv_ap { border-radius: 3px !important; }
+
+/* CHECKBOX / TOGGLE */
+.frost-tweakpane .tp-ckbv_w { display: flex !important; justify-content: flex-end !important; }
+.frost-tweakpane .tp-ckbv_i {
+  width: 32px !important;
+  height: 18px !important;
+  background: rgba(255,255,255,0.1) !important;
+  border: none !important;
+  border-radius: 9px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  transition: background 0.2s !important;
+}
+.frost-tweakpane .tp-ckbv_i::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25) !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.frost-tweakpane .tp-ckbv_w[data-checked="true"] .tp-ckbv_i,
+.frost-tweakpane .tp-ckbv_i:checked { background: var(--frost-accent) !important; }
+.frost-tweakpane .tp-ckbv_w[data-checked="true"] .tp-ckbv_i::before,
+.frost-tweakpane .tp-ckbv_i:checked::before { transform: translateX(14px) !important; }
+.frost-tweakpane .tp-ckbv_m { display: none !important; }
+
+/* Checkbox SVG icon - FROST style */
+.frost-tweakpane .tp-ckbv_w svg {
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 4px !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  padding: 2px !important;
+  transition: all 0.2s ease !important;
+}
+.frost-tweakpane .tp-ckbv_w svg path {
+  fill: none !important;
+  stroke: transparent !important;
+  stroke-width: 2px !important;
+  transition: stroke 0.2s ease !important;
+}
+.frost-tweakpane .tp-ckbv_l:has(input:checked) svg {
+  background: var(--frost-accent, #6ec9b8) !important;
+  border-color: var(--frost-accent, #6ec9b8) !important;
+}
+.frost-tweakpane .tp-ckbv_l:has(input:checked) svg path {
+  stroke: #ffffff !important;
+}
+.frost-tweakpane .tp-ckbv_w:hover svg {
+  border-color: rgba(255,255,255,0.25) !important;
+  background: rgba(255,255,255,0.12) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DROPDOWNS / SELECT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Dropdown container */
+.frost-tweakpane .tp-lstv { 
+  position: relative !important;
+}
+
+/* The native select element */
+.frost-tweakpane .tp-lstv_s {
+  width: 100% !important;
+  background: rgba(0,0,0,0.2) !important;          /* Background color */
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 100px 100px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;  /* Border */
+  border-radius: 4px !important;                   /* Corner rounding */
+  color: rgba(255,255,255,0.85) !important;         /* Show selected value text */
+  font-family: 'DM Sans', -apple-system, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  padding: 5px 24px 5px 8px !important;           /* Padding: top right bottom left */
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;          /* Hover transition speed */
+}
+
+/* Dropdown hover state */
+.frost-tweakpane .tp-lstv_s:hover { 
+  border-color: rgba(255,255,255,0.18) !important;  /* Brighter border on hover */
+  background: rgba(0,0,0,0.28) !important;          /* Darker bg on hover */
+  background-image: var(--frost-noise-pattern) !important;
+  background-blend-mode: overlay !important;
+}
+
+/* Dropdown focus state */
+.frost-tweakpane .tp-lstv_s:focus { 
+  border-color: var(--frost-accent) !important;    /* Accent border when focused */
+  outline: none !important;
+}
+
+/* Custom text overlay (shows selected value) */
+.frost-tweakpane .frost-select-text {
+  position: absolute !important;
+  left: 8px !important;                            /* Text left position */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: rgba(255,255,255,0.85) !important;        /* Text color */
+  font-family: 'DM Sans', -apple-system, sans-serif !important;
+  font-size: 10px !important;                      /* Text size */
+  font-weight: 500 !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* Dropdown arrow icon */
+.frost-tweakpane .tp-lstv_m {
+  position: absolute !important;
+  right: 6px !important;                           /* Arrow position from right */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  color: rgba(255,255,255,0.35) !important;        /* Arrow color */
+  width: 10px !important;                          /* Arrow size */
+  height: 10px !important;
+  z-index: 1 !important;
+}
+
+/* Dropdown menu options (when opened) */
+.frost-tweakpane .tp-lstv_s option {
+  background: #181c20 !important;                  /* Option background */
+  color: rgba(255,255,255,0.9) !important;         /* Option text color */
+  font-size: 11px !important;                      /* Option text size */
+  padding: 8px 10px !important;                    /* Option padding */
+}
+
+/* BUTTONS */
+.frost-tweakpane .tp-btnv_b {
+  width: 100% !important;
+  background: rgba(255,255,255,0.05) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 120px 120px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius-sm) !important;
+  color: var(--frost-text) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  margin-bottom: 4px !important;
+  transition: all 0.15s ease !important;
+  white-space: normal !important;
+  height: auto !important;
+  min-height: 32px !important;
+  line-height: 1.3 !important;
+}
+.frost-tweakpane .tp-btnv_b:last-child { margin-bottom: 0 !important; }
+.frost-tweakpane .tp-btnv_b:hover {
+  background: rgba(255,255,255,0.08) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-blend-mode: overlay !important;
+  border-color: var(--frost-glass-border) !important;
+}
+.frost-tweakpane .tp-btnv_b:active {
+  background: var(--frost-accent-glow) !important;
+  border-color: var(--frost-accent) !important;
+}
+
+/* POINT 2D */
+.frost-tweakpane .tp-p2dv_p {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 150px 150px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius-sm) !important;
+}
+.frost-tweakpane .tp-p2dv_m {
+  background: var(--frost-accent) !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% !important;
+  width: 10px !important;
+  height: 10px !important;
+  box-shadow: 0 0 8px var(--frost-accent) !important;
+}
+.frost-tweakpane .tp-p2dtxtv_w,
+.frost-tweakpane .tp-p3dtxtv_w { display: flex !important; gap: 3px !important; }
+
+/* SEPARATOR */
+.frost-tweakpane .tp-sprv_s {
+  background: var(--frost-glass-border-subtle) !important;
+  height: 1px !important;
+  margin: 8px 0 !important;
+}
+
+/* GRAPH / FPS */
+.frost-tweakpane .tp-grlv_g {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 120px 120px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius-xs) !important;
+}
+.frost-tweakpane .tp-grlv_g path {
+  stroke: var(--frost-accent) !important;
+  fill: var(--frost-accent-glow) !important;
+}
+
+/* RADIO GRID */
+.frost-tweakpane .tp-rgrv { display: flex !important; gap: 2px !important; }
+.frost-tweakpane .tp-rgrv_b {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 80px 80px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--frost-radius-xs) !important;
+  color: var(--frost-text-muted) !important;
+  font-family: 'DM Sans', -apple-system, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  padding: 5px 10px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+.frost-tweakpane .tp-rgrv_b:hover {
+  border-color: var(--frost-glass-border-subtle) !important;
+  color: var(--frost-text) !important;
+}
+.frost-tweakpane .tp-rgrv_b.tp-rgrv_b-sel {
+  background: var(--frost-accent-glow) !important;
+  border-color: var(--frost-accent) !important;
+  color: var(--frost-accent) !important;
+}
+
+/* BUTTON GRID */
+.frost-tweakpane .tp-bgrv { display: grid !important; gap: 2px !important; }
+.frost-tweakpane .tp-bgrv_b {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 80px 80px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--frost-radius-xs) !important;
+  color: var(--frost-text) !important;
+  font-family: 'DM Sans', -apple-system, sans-serif !important;
+  font-size: 10px !important;
+  padding: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+.frost-tweakpane .tp-bgrv_b:hover {
+  background: rgba(255,255,255,0.06) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-blend-mode: overlay !important;
+  border-color: var(--frost-glass-border-subtle) !important;
+}
+.frost-tweakpane .tp-bgrv_b:active {
+  background: var(--frost-accent-glow) !important;
+  border-color: var(--frost-accent) !important;
+}
+
+/* CUBIC BEZIER */
+.frost-tweakpane .tp-czbv_p {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 140px 140px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius-sm) !important;
+}
+.frost-tweakpane .tp-czbv_g { stroke: var(--frost-accent) !important; }
+.frost-tweakpane .tp-czbv_h {
+  background: var(--frost-accent) !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 8px var(--frost-accent) !important;
+}
+.frost-tweakpane .tp-czbv_l { stroke: var(--frost-text-muted) !important; }
+
+/* INTERVAL / RANGE */
+.frost-tweakpane .tp-rsltxtv { 
+  display: flex !important; 
+  gap: 6px !important; 
+  align-items: center !important; 
+}
+.frost-tweakpane .tp-rsltxtv_s { flex: 1 !important; }
+.frost-tweakpane .tp-rslv {
+  height: 6px !important;
+  position: relative !important;
+}
+.frost-tweakpane .tp-rslv_t {
+  background: rgba(255,255,255,0.1) !important;
+  border-radius: 3px !important;
+  height: 6px !important;
+}
+.frost-tweakpane .tp-rslv_k {
+  background: linear-gradient(90deg, #4a9a8c, var(--frost-accent)) !important;
+  border-radius: 3px !important;
+  height: 100% !important;
+  box-shadow: 0 0 6px var(--frost-accent-glow) !important;
+}
+
+/* MONITOR */
+.frost-tweakpane .tp-mllv_i {
+  background: var(--frost-input-bg) !important;
+  background-image: var(--frost-noise-pattern) !important;
+  background-size: 100px 100px !important;
+  background-blend-mode: overlay !important;
+  border: 1px solid var(--frost-glass-border-subtle) !important;
+  border-radius: var(--frost-radius-xs) !important;
+  color: var(--frost-accent) !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  padding: 5px 8px !important;
+}
+
+/* FIX: Overflow for popup elements */
+.frost-tweakpane .tp-popv {
+  z-index: 1000 !important;
+}

@@ -1,0 +1,60 @@
+/* Fluidity skin over Dockview — glass language, never the default IDE look. */
+
+.fluidity-dockview {
+  --dv-background-color: transparent;
+  --dv-paneview-active-outline-color: var(--color-accent);
+  --dv-tabs-and-actions-container-background-color: transparent;
+  --dv-group-view-background-color: transparent;
+  --dv-tabs-container-scrollbar-color: var(--color-border);
+
+  --dv-activegroup-visiblepanel-tab-background-color: var(--color-surface-raised);
+  --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--color-surface);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+
+  --dv-activegroup-visiblepanel-tab-color: var(--color-text);
+  --dv-activegroup-hiddenpanel-tab-color: var(--color-text-muted);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--color-text-muted);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--color-text-muted);
+
+  --dv-separator-border: var(--color-border-soft);
+  --dv-tab-divider-color: transparent;
+  --dv-icon-hover-background-color: rgba(255, 255, 255, 0.06);
+
+  height: 100%;
+  width: 100%;
+}
+
+/* Single-panel demo layout: the PanelShell supplies the visible header, so
+   the Dockview tab strip is hidden to avoid a duplicate header (ADR-007 —
+   Dockview stays the invisible engine). */
+.fluidity-dockview .dv-tabs-and-actions-container {
+  display: flex;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.fluidity-dockview .dv-tab {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-radius: 0;
+  transition: all 0.2s ease;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.fluidity-dockview .dv-tab.dv-active-tab {
+  background: rgba(255,255,255,0.02);
+  color: var(--color-text);
+}
+
+.fluidity-dockview .dv-sash {
+  background: transparent;
+  transition: background 0.15s ease;
+}
+.fluidity-dockview .dv-sash:hover {
+  background: rgba(45,212,191,0.2);
+}
