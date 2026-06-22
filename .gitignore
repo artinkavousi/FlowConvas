@@ -26,3 +26,6 @@ Thumbs.db
 # local caches
 .vite/
 .cache/
+
+# conversion reference inputs (owned/ported source lives in STUDIO/src/modules/*)
+REF/
