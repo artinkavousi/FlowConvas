@@ -34,5 +34,5 @@ export default defineConfig({
       },
     },
   },
-  server: { port: 3001, host: '0.0.0.0' },
+  server: { port: process.env.PORT ? Number(process.env.PORT) : 3001, host: '0.0.0.0' },
 });

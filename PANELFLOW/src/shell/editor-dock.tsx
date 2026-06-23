@@ -647,6 +647,10 @@ export function EditorDock({ brand }: EditorDockProps = {}) {
   const dockDragging = useRef(false);
 
   const stats       = useGraphStore((s) => s.stats);
+  const fpsLabel = stats.fps > 0 ? String(Math.round(stats.fps)) : '--';
+  const computeLabel = stats.computeTime > 0 ? stats.computeTime.toFixed(1) : '--';
+  const memoryLabel = stats.memory > 0 ? String(stats.memory) : '--';
+  const rendererLabel = stats.renderer || 'Idle';
 
   const dockMode       = usePanelOSStore((s) => s.dockMode);
   const floatRect      = usePanelOSStore((s) => s.dockFloatRect);
@@ -784,24 +788,24 @@ export function EditorDock({ brand }: EditorDockProps = {}) {
                 className="flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-teal-500/10 to-teal-500/5 rounded-md border border-teal-500/20 text-[9px] font-bold tracking-wider text-teal-200/80 uppercase shadow-sm"
                 title="Active Renderer"
               >
-                <div className="w-1.5 h-1.5 bg-teal-400/80 rounded-full animate-pulse blur-[0.5px]" />
-                <span>{stats.renderer || 'WebGPU'}</span>
+                <div className={`w-1.5 h-1.5 rounded-full blur-[0.5px] ${stats.fps > 0 ? 'bg-teal-400/80 animate-pulse' : 'bg-zinc-500/70'}`} />
+                <span>{rendererLabel}</span>
               </div>
               <div className="flex items-center gap-2.5 px-1">
                 <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400" title="Frames Per Second" aria-label="FPS">
                   <Activity size={10} className={stats.fps > 50 ? 'text-teal-400/80' : stats.fps > 30 ? 'text-orange-400/80' : 'text-rose-400/80'} />
-                  <span className="w-4 text-right inline-block text-white/90 font-medium">{stats.fps > 0 ? Math.round(stats.fps) : 60}</span>
+                  <span className="w-4 text-right inline-block text-white/90 font-medium">{fpsLabel}</span>
                 </div>
                 <div className="w-[1px] h-3 bg-white/10" />
                 <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400" title="Frame Compute Time" aria-label="Compute Time">
                   <Zap size={10} className="text-yellow-400/70" />
-                  <span className="text-white/90 font-medium">{stats.computeTime || 16.6}</span>
+                  <span className="text-white/90 font-medium">{computeLabel}</span>
                   <span className="text-zinc-600">ms</span>
                 </div>
                 <div className="w-[1px] h-3 bg-white/10" />
                 <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400" title="Memory Usage" aria-label="Memory">
                   <Cpu size={10} className="text-emerald-400/70" />
-                  <span className="text-white/90 font-medium">{stats.memory || 110}</span>
+                  <span className="text-white/90 font-medium">{memoryLabel}</span>
                   <span className="text-zinc-600">mb</span>
                 </div>
               </div>

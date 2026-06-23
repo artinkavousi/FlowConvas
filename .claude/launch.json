@@ -5,7 +5,8 @@
       "name": "studio",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "STUDIO", "run", "dev"],
-      "port": 3001
+      "port": 3001,
+      "autoPort": true
     },
     {
       "name": "dev",

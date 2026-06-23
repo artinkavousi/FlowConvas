@@ -2,71 +2,101 @@
  * WebGPUFluidModule — reusable React wrapper around the ported WebGPU fluid sim.
  *
  * Copy-paste portable: drop this file + the `sim/` folder into any React app with
- * `three` installed. Drag the canvas to inject dye/velocity. Props mutate the sim's
- * shared `config` singleton live (read each frame by the simulation).
+ * `three` installed. Drag the canvas to inject dye/velocity; emitters keep the
+ * field self-animating. `values` (keyed by the params in sim/params.ts) mutate
+ * the sim's shared `config` singleton live; `preset` applies a full built-in
+ * look (config + emitter layout) from the source PresetManager.
  */
 
 import { useEffect, useRef } from 'react';
 import { createFluid, config } from './sim/createFluid.js';
+import { applyFluidParam, readConfigToValues, DEFAULT_PRESET } from './sim/params';
+
+type FluidValues = Record<string, unknown>;
+
+interface FluidHandle {
+  applyPreset: (id: string) => void;
+  dispose: () => void;
+}
+
+type CreateFluid = (
+  canvas: HTMLCanvasElement,
+  options: { preset?: string; onStats?: (stats: FluidStats) => void },
+) => Promise<FluidHandle>;
+
+export interface FluidStats {
+  fps: number;
+  computeTime: number;
+  memory: number;
+  triangles: number;
+  calls: number;
+  renderer: string;
+}
 
 export interface WebGPUFluidProps {
-  /** Vorticity / swirliness (config.CURL). */
-  curl?: number;
-  /** Pointer influence size (config.SPLAT_RADIUS). */
-  splatRadius?: number;
-  /** How fast motion fades (config.VELOCITY_DISSIPATION). */
-  velocityDissipation?: number;
-  /** How fast dye fades (config.DENSITY_DISSIPATION). */
-  densityDissipation?: number;
-  /** Bloom post-FX on/off (config.BLOOM). */
-  bloom?: boolean;
-  /** Bloom strength (config.BLOOM_INTENSITY). */
-  bloomIntensity?: number;
-  /** Particle filament layer (config.PARTICLES_ENABLED). */
-  particles?: boolean;
+  /** Bridge values keyed by sim/params.ts param keys (curl, renderMode, …). */
+  values?: FluidValues;
+  /** Built-in preset id (config + emitter layout). Default: 'aurora'. */
+  preset?: string;
+  /** Called after a preset is applied with the resulting flat config values,
+   *  so a host control panel can re-sync its widgets to the preset. */
+  onPresetApplied?: (values: FluidValues) => void;
+  /** Optional render-loop telemetry hook for host chrome such as PANELFLOW. */
+  onStats?: (stats: FluidStats) => void;
   className?: string;
 }
 
-export function WebGPUFluidModule({
-  curl,
-  splatRadius,
-  velocityDissipation,
-  densityDissipation,
-  bloom,
-  bloomIntensity,
-  particles,
-  className,
-}: WebGPUFluidProps) {
+export function WebGPUFluidModule({ values, preset, onPresetApplied, onStats, className }: WebGPUFluidProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const handleRef = useRef<FluidHandle | null>(null);
+  const initialPreset = useRef(preset ?? DEFAULT_PRESET);
+  const onPresetAppliedRef = useRef(onPresetApplied);
+  const onStatsRef = useRef(onStats);
+  onPresetAppliedRef.current = onPresetApplied;
+  onStatsRef.current = onStats;
 
   // Mount the simulation once; dispose on unmount.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    let handle: { dispose: () => void } | null = null;
     let disposed = false;
-    createFluid(canvas)
-      .then((h: { dispose: () => void }) => {
+    (createFluid as CreateFluid)(canvas, {
+      preset: initialPreset.current,
+      onStats: (stats: FluidStats) => onStatsRef.current?.(stats),
+    })
+      .then((h: FluidHandle) => {
         if (disposed) h.dispose();
-        else handle = h;
+        else handleRef.current = h;
       })
       .catch((e: unknown) => console.error('[webgpu-fluid] init failed', e));
     return () => {
       disposed = true;
-      handle?.dispose();
+      handleRef.current?.dispose();
+      handleRef.current = null;
     };
   }, []);
 
-  // Apply controllable knobs live to the shared config singleton.
+  // Apply controllable knobs live onto the shared config singleton.
   useEffect(() => {
-    if (curl !== undefined) config.CURL = curl;
-    if (splatRadius !== undefined) config.SPLAT_RADIUS = splatRadius;
-    if (velocityDissipation !== undefined) config.VELOCITY_DISSIPATION = velocityDissipation;
-    if (densityDissipation !== undefined) config.DENSITY_DISSIPATION = densityDissipation;
-    if (bloom !== undefined) config.BLOOM = bloom;
-    if (bloomIntensity !== undefined) config.BLOOM_INTENSITY = bloomIntensity;
-    if (particles !== undefined) config.PARTICLES_ENABLED = particles;
-  }, [curl, splatRadius, velocityDissipation, densityDissipation, bloom, bloomIntensity, particles]);
+    if (!values) return;
+    for (const key of Object.keys(values)) {
+      applyFluidParam(config as unknown as Record<string, unknown>, key, values[key]);
+    }
+  }, [values]);
+
+  // Apply a built-in preset when it changes, then report the resulting config so
+  // the host panel can re-sync. Skip the very first render (createFluid already
+  // applied the initial preset on mount).
+  const lastPreset = useRef(initialPreset.current);
+  useEffect(() => {
+    const next = preset ?? DEFAULT_PRESET;
+    if (next === lastPreset.current) return;
+    lastPreset.current = next;
+    const handle = handleRef.current;
+    if (!handle) return;
+    handle.applyPreset(next);
+    onPresetAppliedRef.current?.(readConfigToValues(config as unknown as Record<string, unknown>));
+  }, [preset]);
 
   return <canvas ref={canvasRef} className={className} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

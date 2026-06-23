@@ -397,9 +397,8 @@ export default function Viewport() {
           if (host.info) {
              triangles = host.info.render?.triangles || 0;
              calls = host.info.render?.calls || 0;
-             // WebGPURenderer might not use memory geometries/textures exactly the same, but let's derive something
-             memory = Math.round((host.info.memory?.geometries || 0) * 0.5 + (host.info.memory?.textures || 0) * 2.5);
-             if (memory === 0) memory = Math.floor(Math.random() * 20) + 110; // fallback aesthetic mock
+             const heap = (performance as Performance & { memory?: { usedJSHeapSize?: number } }).memory;
+             memory = heap?.usedJSHeapSize ? Math.round(heap.usedJSHeapSize / (1024 * 1024)) : 0;
              computeTime = Number((1000 / (fps || 60)).toFixed(1));
           }
 

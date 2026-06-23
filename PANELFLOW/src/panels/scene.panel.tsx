@@ -176,6 +176,9 @@ function PipelineView() {
   }, []);
 
   const patch = (next: Partial<SceneSettings>) => updateScene(next);
+  const activeFps = stats.fps > 0 ? stats.fps : fps;
+  const computeLabel = stats.computeTime > 0 ? `${stats.computeTime.toFixed(1)}ms` : '--';
+  const backendLabel = (stats.renderer || detectedBackend).toUpperCase();
 
   return (
     <PanelShell>
@@ -246,9 +249,9 @@ function PipelineView() {
 
         <Section title="Telemetry">
           <div className="grid grid-cols-2 gap-2">
-            <Metric icon={Activity} label="FPS" value={stats.fps || fps} sub="viewport loop" />
-            <Metric icon={Cpu} label="Backend" value={(stats.renderer || detectedBackend).toUpperCase()} sub="detected" />
-            <Metric icon={Zap} label="Compute" value={`${stats.computeTime || 16.6}ms`} sub="frame budget" />
+            <Metric icon={Activity} label="FPS" value={activeFps} sub="viewport loop" />
+            <Metric icon={Cpu} label="Backend" value={backendLabel} sub="detected" />
+            <Metric icon={Zap} label="Compute" value={computeLabel} sub="frame average" />
             <Metric icon={BarChart3} label="Nodes" value={nodesCount} sub="definitions" />
           </div>
         </Section>

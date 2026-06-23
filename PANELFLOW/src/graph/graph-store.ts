@@ -55,6 +55,8 @@ export interface StatsState {
   renderer: string;
   memory: number; // in MB
   computeTime: number; // in ms
+  source?: string;
+  updatedAt?: number;
 }
 
 interface GraphState {
@@ -104,9 +106,11 @@ const DEFAULT_STATS: StatsState = {
   fps: 0,
   triangles: 0,
   calls: 0,
-  renderer: 'WebGPU',
+  renderer: '',
   memory: 0,
   computeTime: 0,
+  source: '',
+  updatedAt: 0,
 };
 
 export const useGraphStore = create<GraphState>((set, get) => ({

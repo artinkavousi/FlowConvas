@@ -81,6 +81,7 @@ Must not:
 - The graph is an optional panel, not the hardcoded center of the dock.
 - The dock is a multi-panel host using resizable split columns plus a vertical icon rail.
 - Current main panels are consolidated around meaningful surfaces: `Scene Settings`, `Inspector`, and `Library`. `Node Graph` is secondary/optional. Avoid bringing back old stub panels like generic Code/Engine placeholders.
+- PANELFLOW owns the shared performance monitor contract. Host modules and reusable components should publish real render-loop telemetry through `usePerformanceTelemetry` / `publishPerformanceStats`; the dock monitor must display unavailable values honestly instead of decorative FPS/compute/memory constants.
 
 ---
 
