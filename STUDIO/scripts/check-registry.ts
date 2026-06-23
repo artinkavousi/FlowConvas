@@ -43,7 +43,7 @@ function strField(src: string, field: string): string | null {
 }
 
 const files = findModuleFiles();
-const rows: { name: string; id: string; ok: boolean; problems: string[] }[] = [];
+const rows: { name: string; id: string; ok: boolean; problems: string[]; category: string }[] = [];
 const seenIds = new Map<string, string>();
 
 for (const file of files) {
@@ -82,7 +82,7 @@ for (const file of files) {
   if (seenIds.has(id)) problems.push(`duplicate id (also in ${seenIds.get(id)})`);
   else seenIds.set(id, rel);
 
-  rows.push({ name: rel, id, ok: problems.length === 0, problems });
+  rows.push({ name: rel, id, ok: problems.length === 0, problems, category: strField(src, 'category') ?? '?' });
 }
 
 // ── Report ───────────────────────────────────────────────────────────────────
@@ -93,6 +93,10 @@ for (const r of rows) {
   for (const p of r.problems) console.log(`     · ${p}`);
 }
 const failed = rows.filter((r) => !r.ok).length;
+const categories = [...new Set(rows.map((r) => r.category))].sort();
 console.log('─'.repeat(50));
-console.log(`${rows.length} module(s), ${rows.length - failed} ok, ${failed} failed.\n`);
+console.log(`${rows.length} module(s) across ${categories.length} categ(${categories.join(', ')}), ${rows.length - failed} ok, ${failed} failed.`);
+// Multi-domain gate (plan-completion C-13): the library should span ≥4 categories.
+if (categories.length < 4) console.log(`note: only ${categories.length} categories — library not yet multi-domain (target ≥4).`);
+console.log('');
 process.exit(failed > 0 ? 1 : 0);

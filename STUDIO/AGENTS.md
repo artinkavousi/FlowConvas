@@ -19,6 +19,15 @@ In order, before writing new code:
 
 ARTINOS grows through reuse, not duplication. If a module already covers the need, reuse/extend it and stop.
 
+**Three ways to discover existing modules before building:**
+- **Agent panel** (in the dock) — every module's agent record (id, category, tags, `agentNotes`,
+  `usage`, deps, validation) with copy-as-JSON + the reuse-first checklist.
+- **MCP tools** (`npm run mcp -w STUDIO`, see `MCP.md`) — `search_modules`, `get_module` let an
+  agent discover/read a module programmatically without opening source; `scaffold_module` +
+  `check_registry` cover create + gate.
+- **Graph spotlight** — every module is also a graph node (`module/<id>`); press **Space** on the
+  Node Graph canvas to search and drop one in.
+
 ## 2. How a module is structured
 
 A module is a folder `STUDIO/src/modules/<id>/` auto-discovered by the registry (`import.meta.glob`):
@@ -63,5 +72,7 @@ Keep it one tight paragraph. Fill `usage`, `dependencies`, `tags`, `related`, an
 - [ ] For conversions: side-by-side fidelity vs the source confirmed; deviations reported
       (root `AGENTS.md` §4).
 - [ ] Nothing outside scope changed; PANELFLOW not modified casually.
+- [ ] New/changed modules are discoverable via the Agent panel, the MCP `list_modules`, and the
+      graph spotlight (all three read the registry automatically — just confirm the entry is complete).
 
 "It builds" is not done. Show the evidence (command output / screenshot / console).

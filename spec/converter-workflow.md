@@ -11,9 +11,10 @@
 ## 0. Before you convert — reuse first
 
 Run the reuse-first checklist (ARTINOS-PRD §15, also in `STUDIO/AGENTS.md`):
-search the registry (`searchModules`) for an existing module that already does this.
-If one exists, **extend or reuse it** instead of converting a duplicate. Only proceed
-when the input is genuinely new.
+search the registry for an existing module that already does this — via `searchModules`,
+the **Agent panel**, the **MCP** `search_modules`/`get_module` tools (`STUDIO/MCP.md`), or the
+**graph spotlight** (every module is a `module/<id>` node). If one exists, **extend or reuse it**
+instead of converting a duplicate. Only proceed when the input is genuinely new.
 
 ## 1. Accepted inputs (ARTINOS-PRD §10)
 
