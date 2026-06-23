@@ -1,14 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ReactFlowProvider } from '@xyflow/react';
-import { Circle, Box, Square, Disc, RotateCcw, Minus, Maximize2, Move, Activity, Triangle, Layers, X, ExternalLink, Cpu, Zap, HardDrive, PanelBottom, PanelLeft, PanelRight, PictureInPicture2 } from 'lucide-react';
+import { Circle, Box, Square, Disc, Minus, Maximize2, Move, Activity, Layers, X, Cpu, Zap, PanelBottom, PanelLeft, PanelRight, PictureInPicture2, LayoutGrid, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GraphCanvas } from '@/graph/graph-canvas';
 import { IconRail } from '@/shell/icon-rail';
-import { BottomControls } from '@/shell/minimap';
 import { Tooltip } from '@/components/ui/tooltip';
 import { useGraphStore } from '@/graph/graph-store';
 import { usePanelOSStore, type DockMode, type DockFloatRect } from '@/panel-os/panel-store';
-import { PanelChrome } from '@/shell/panel-chrome';
 import { getPanelDefinition } from '@/panel-os/panel-registry';
 import { spring } from '@/lib/motion';
 
@@ -25,7 +21,7 @@ function SceneControls() {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div 
+    <motion.div
       className="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/5 shadow-inner overflow-hidden"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -102,13 +98,22 @@ const DOCK_MODES = [
   { id: 'float',  Icon: PictureInPicture2, label: 'Float' },
 ] as const;
 
+const PANEL_DROP_TYPE = 'application/panelflow-panel';
+const PANEL_DROP_ORIGIN = 'application/panelflow-panel-origin';
+
+const PANEL_LAYOUT_PRESETS = [
+  { id: 'main', label: 'Main layout', Icon: LayoutGrid, panels: ['inspector', 'scene-settings'], active: 'inspector' },
+  { id: 'inspect', label: 'Inspect layout', Icon: PanelRight, panels: ['inspector', 'library'], active: 'inspector' },
+  { id: 'graph', label: 'Graph layout', Icon: Activity, panels: ['graph', 'inspector'], active: 'graph' },
+] as const;
+
 function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' | 'max') => void }) {
   const dockMode = usePanelOSStore((s) => s.dockMode);
   const setDockMode = usePanelOSStore((s) => s.setDockMode);
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div 
+    <motion.div
       className="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/5 shadow-inner overflow-hidden"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -129,12 +134,12 @@ function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' |
                 transition={{ duration: 0.15 }}
               >
                 <Tooltip text={label} side="bottom">
-                  <button 
-                    onClick={() => setDockMode(id)} 
+                  <button
+                    onClick={() => setDockMode(id)}
                     aria-label={label}
                     className={`p-1.5 rounded-md transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 shrink-0 ${
-                      isActive 
-                        ? 'bg-zinc-700/50 text-white shadow-sm ring-1 ring-white/10 ml-0.5' 
+                      isActive
+                        ? 'bg-zinc-700/50 text-white shadow-sm ring-1 ring-white/10 ml-0.5'
                         : 'text-zinc-500 hover:text-white hover:bg-white/10 ml-0.5'
                     }`}
                   >
@@ -167,9 +172,9 @@ function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' |
                 transition={{ duration: 0.15 }}
               >
                 <Tooltip text={label.split(' ')[0]} side="bottom">
-                  <button 
-                    onClick={() => setPreset(id)} 
-                    className="p-1.5 hover:bg-white/10 rounded-md text-zinc-500 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 shrink-0" 
+                  <button
+                    onClick={() => setPreset(id)}
+                    className="p-1.5 hover:bg-white/10 rounded-md text-zinc-500 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 shrink-0"
                     aria-label={label}
                   >
                     <Icon size={id === 'default' ? 10 : 12} />
@@ -179,9 +184,7 @@ function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' |
             );
           })}
         </AnimatePresence>
-        
-        {/* If not hovered, show a little grab-like or expand icon just to indicate there's more, or keep default visible? 
-            Let's keep the default visible if not hovered so user can always resize. */}
+
         <AnimatePresence initial={false}>
             {!isHovered && (
                 <motion.div
@@ -193,9 +196,9 @@ function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' |
                 transition={{ duration: 0.15 }}
               >
                 <Tooltip text="Default Size" side="bottom">
-                  <button 
-                    onClick={() => setPreset('default')} 
-                    className="p-1.5 hover:bg-white/10 rounded-md text-zinc-500 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 shrink-0" 
+                  <button
+                    onClick={() => setPreset('default')}
+                    className="p-1.5 hover:bg-white/10 rounded-md text-zinc-500 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 shrink-0"
                     aria-label="Default size"
                   >
                     <Square size={10} />
@@ -206,6 +209,408 @@ function WindowControls({ setPreset }: { setPreset: (preset: 'min' | 'default' |
         </AnimatePresence>
       </div>
     </motion.div>
+  );
+}
+
+function LayoutPresetControls() {
+  const setPanelLayout = usePanelOSStore((s) => s.setPanelLayout);
+
+  return (
+    <motion.div
+      className="flex items-center bg-black/40 p-0.5 rounded-lg border border-white/5 shadow-inner"
+      layout
+    >
+      {PANEL_LAYOUT_PRESETS.map(({ id, label, Icon, panels, active }) => (
+        <Tooltip key={id} text={label} side="bottom">
+          <button
+            onClick={() => {
+              const availablePanels = panels.filter((panelId) => getPanelDefinition(panelId));
+              setPanelLayout(availablePanels, active);
+            }}
+            aria-label={label}
+            className="p-1.5 rounded-md text-zinc-500 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-1 focus:ring-white/20"
+          >
+            <Icon size={12} />
+          </button>
+        </Tooltip>
+      ))}
+    </motion.div>
+  );
+}
+
+// ─── multi-panel host (resizable split panels) ──────────────────────────────
+
+function EmptyDockState() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-6 select-none">
+      <LayoutGrid size={20} className="text-white/20" />
+      <p className="text-[11px] uppercase tracking-[0.2em] text-white/30">No panel open</p>
+      <p className="text-[11px] text-white/25 max-w-[220px] leading-relaxed">
+        Pick a panel from the rail, or press <kbd className="px-1 py-0.5 rounded bg-white/10 text-white/50">⌘K</kbd> to search.
+      </p>
+    </div>
+  );
+}
+
+function DropIndicator() {
+  return (
+    <div className="relative z-20 w-0 shrink-0 pointer-events-none" aria-hidden="true">
+      <div className="absolute left-[-1px] top-2 bottom-2 w-0.5 rounded-full bg-teal-300 shadow-[0_0_18px_rgba(45,212,191,0.9)]" />
+    </div>
+  );
+}
+
+const SPLIT_HANDLE_WIDTH = 8;
+const TWO_PANEL_PRIMARY_RATIO = 0.61803398875;
+
+function PanelHost() {
+  const openPanelIds = usePanelOSStore((s) => s.openPanelIds);
+  const activePanelId = usePanelOSStore((s) => s.activePanelId);
+  const panelSizes = usePanelOSStore((s) => s.panelSizes);
+  const setPanelSize = usePanelOSStore((s) => s.setPanelSize);
+  const focusPanel = usePanelOSStore((s) => s.focusPanel);
+  const closePanel = usePanelOSStore((s) => s.closePanel);
+  const openPanelAt = usePanelOSStore((s) => s.openPanelAt);
+  const movePanel = usePanelOSStore((s) => s.movePanel);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+  const resizing = useRef<{
+    id: string;
+    nextId: string;
+    startX: number;
+    startSize: number;
+    startNextSize: number;
+    min: number;
+    nextMin: number;
+  } | null>(null);
+  const pointerPanelDrag = useRef<{ id: string; targetIndex: number | null } | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const [hostWidth, setHostWidth] = useState(0);
+  // Re-render when auto-generated panels are added/removed.
+  usePanelOSStore((s) => s.registryVersion);
+
+  const visiblePanels = openPanelIds
+    .map((id) => getPanelDefinition(id))
+    .filter(Boolean) as NonNullable<ReturnType<typeof getPanelDefinition>>[];
+
+  useEffect(() => {
+    const element = scrollAreaRef.current;
+    if (!element) return undefined;
+
+    const updateWidth = () => setHostWidth(element.clientWidth);
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const getPanelBasis = useCallback((def: NonNullable<ReturnType<typeof getPanelDefinition>>, index: number) => {
+    const min = def.minSize ?? 260;
+    const explicit = panelSizes[def.id];
+    if (explicit) return Math.max(min, explicit);
+    if (visiblePanels.length === 1) return hostWidth || min;
+    if (visiblePanels.length === 2 && hostWidth > 0) {
+      const available = Math.max(min * 2, hostWidth - SPLIT_HANDLE_WIDTH);
+      const primary = available * TWO_PANEL_PRIMARY_RATIO;
+      return index === 0 ? Math.max(min, primary) : Math.max(min, available - primary);
+    }
+    return Math.max(min, def.defaultSize ?? 340);
+  }, [hostWidth, panelSizes, visiblePanels.length]);
+
+  const canDropPanel = useCallback((event: React.DragEvent) => (
+    event.dataTransfer.types.includes(PANEL_DROP_TYPE)
+  ), []);
+
+  const applyPanelDrop = useCallback((event: React.DragEvent, targetIndex: number) => {
+    const id = event.dataTransfer.getData(PANEL_DROP_TYPE) || event.dataTransfer.getData('text/plain');
+    if (!id || !getPanelDefinition(id)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const origin = event.dataTransfer.getData(PANEL_DROP_ORIGIN);
+    if (origin === 'dock') movePanel(id, targetIndex);
+    else openPanelAt(id, targetIndex);
+    setDropIndex(null);
+  }, [movePanel, openPanelAt]);
+
+  const getSectionDropIndex = useCallback((event: React.DragEvent<HTMLElement>, index: number) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return event.clientX < rect.left + rect.width / 2 ? index : index + 1;
+  }, []);
+
+  const getPointerDropIndex = useCallback((clientX: number, clientY: number) => {
+    const target = document
+      .elementFromPoint(clientX, clientY)
+      ?.closest<HTMLElement>('[data-panelflow-panel-section]');
+    if (!target) return visiblePanels.length;
+    const index = Number(target.dataset.panelIndex ?? visiblePanels.length);
+    const rect = target.getBoundingClientRect();
+    return clientX < rect.left + rect.width / 2 ? index : index + 1;
+  }, [visiblePanels.length]);
+
+  const updateSplitResize = useCallback((clientX: number) => {
+    if (!resizing.current) return;
+    const pairSize = resizing.current.startSize + resizing.current.startNextSize;
+    const delta = clientX - resizing.current.startX;
+    const nextSize = Math.max(
+      resizing.current.min,
+      Math.min(pairSize - resizing.current.nextMin, resizing.current.startSize + delta),
+    );
+    setPanelSize(resizing.current.id, nextSize);
+    setPanelSize(resizing.current.nextId, pairSize - nextSize);
+  }, [setPanelSize]);
+
+  const stopSplitResize = useCallback(() => {
+    resizing.current = null;
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => updateSplitResize(event.clientX);
+    const handleMouseUp = () => stopSplitResize();
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [stopSplitResize, updateSplitResize]);
+
+  return (
+    <div
+      className="flex-1 min-w-0 min-h-0 relative"
+      onDragOver={(event) => {
+        if (canDropPanel(event)) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = event.dataTransfer.getData(PANEL_DROP_ORIGIN) === 'dock' ? 'move' : 'copy';
+          if (visiblePanels.length === 0) setDropIndex(0);
+        }
+      }}
+      onDrop={(event) => {
+        applyPanelDrop(event, visiblePanels.length);
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDropIndex(null);
+      }}
+      onDragEnd={() => setDropIndex(null)}
+    >
+      {visiblePanels.length === 0 ? (
+        <EmptyDockState />
+      ) : (
+        <div ref={scrollAreaRef} className="h-full min-w-0 overflow-x-auto overflow-y-hidden custom-scrollbar">
+          <div className="flex h-full min-w-full items-stretch gap-0">
+            {visiblePanels.map((def, index) => {
+              const Icon = def.icon;
+              const Component = def.component;
+              const isActive = def.id === activePanelId;
+              const closable = def.capabilities?.closable !== false;
+              const min = def.minSize ?? 260;
+              const basis = getPanelBasis(def, index);
+
+              return (
+                <React.Fragment key={def.id}>
+                  {dropIndex === index && <DropIndicator />}
+                  <section
+                    data-panelflow-panel-section
+                    data-panel-index={index}
+                    onPointerDown={() => focusPanel(def.id)}
+                    onDragOver={(event) => {
+                      if (!canDropPanel(event)) return;
+                      event.preventDefault();
+                      event.stopPropagation();
+                      event.dataTransfer.dropEffect = event.dataTransfer.getData(PANEL_DROP_ORIGIN) === 'dock' ? 'move' : 'copy';
+                      setDropIndex(getSectionDropIndex(event, index));
+                    }}
+                    onDrop={(event) => applyPanelDrop(event, getSectionDropIndex(event, index))}
+                    className={`group/panel flex min-h-0 flex-col border-r border-white/[0.055] transition-colors ${
+                      isActive ? 'bg-white/[0.026]' : 'bg-black/[0.045] hover:bg-white/[0.014]'
+                    }`}
+                    style={{
+                      flex: visiblePanels.length === 1 ? '1 1 100%' : `0 0 ${basis}px`,
+                      minWidth: min,
+                    }}
+                  >
+                    <header
+                      draggable
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData(PANEL_DROP_TYPE, def.id);
+                        event.dataTransfer.setData(PANEL_DROP_ORIGIN, 'dock');
+                        event.dataTransfer.setData('text/plain', def.id);
+                      }}
+                      onDragEnd={() => setDropIndex(null)}
+                      className={`flex min-h-[42px] items-center justify-between gap-3 border-b px-3 py-2 transition ${
+                        isActive ? 'border-teal-300/16 bg-teal-300/[0.045]' : 'border-white/[0.055] bg-white/[0.018]'
+                      }`}
+                    >
+                      <button
+                        onClick={() => focusPanel(def.id)}
+                        className="flex min-w-0 items-center gap-2 text-left focus:outline-none"
+                      >
+                        {Icon && (
+                          <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-md border ${
+                            isActive ? 'border-teal-300/24 bg-teal-300/10 text-teal-300' : 'border-white/8 bg-black/22 text-white/38'
+                          }`}>
+                            <Icon size={13} />
+                          </span>
+                        )}
+                        <span className="min-w-0">
+                          <span className="block truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/76">
+                            {def.title}
+                          </span>
+                          <span className="mt-0.5 hidden truncate text-[9px] text-white/28 xl:block">
+                            {def.description}
+                          </span>
+                        </span>
+                      </button>
+
+                      <div className="flex shrink-0 items-center gap-1">
+                        {visiblePanels.length > 1 && (
+                          <div className="flex items-center gap-0.5 opacity-35 transition group-hover/panel:opacity-100">
+                            <button
+                              aria-label={`Move ${def.title} left`}
+                              disabled={index === 0}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                movePanel(def.id, index - 1);
+                              }}
+                              className="grid h-6 w-5 place-items-center rounded-md text-white/20 transition hover:bg-white/8 hover:text-teal-200 disabled:pointer-events-none disabled:opacity-20"
+                            >
+                              <ChevronLeft size={12} />
+                            </button>
+                            <button
+                              aria-label={`Move ${def.title} right`}
+                              disabled={index === visiblePanels.length - 1}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                movePanel(def.id, index + 2);
+                              }}
+                              className="grid h-6 w-5 place-items-center rounded-md text-white/20 transition hover:bg-white/8 hover:text-teal-200 disabled:pointer-events-none disabled:opacity-20"
+                            >
+                              <ChevronRight size={12} />
+                            </button>
+                          </div>
+                        )}
+                        <button
+                          aria-label={`Move ${def.title}`}
+                          className="grid h-6 w-5 place-items-center rounded-md text-white/18 opacity-0 transition hover:bg-white/8 hover:text-teal-200 group-hover/panel:opacity-100 cursor-grab active:cursor-grabbing"
+                          onPointerDown={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            event.currentTarget.setPointerCapture(event.pointerId);
+                            focusPanel(def.id);
+                            pointerPanelDrag.current = { id: def.id, targetIndex: index };
+                            setDropIndex(index);
+                          }}
+                          onPointerMove={(event) => {
+                            if (pointerPanelDrag.current?.id !== def.id) return;
+                            const targetIndex = getPointerDropIndex(event.clientX, event.clientY);
+                            pointerPanelDrag.current.targetIndex = targetIndex;
+                            setDropIndex(targetIndex);
+                          }}
+                          onPointerUp={(event) => {
+                            if (pointerPanelDrag.current?.id === def.id) {
+                              const targetIndex = pointerPanelDrag.current.targetIndex;
+                              if (targetIndex !== null) movePanel(def.id, targetIndex);
+                            }
+                            pointerPanelDrag.current = null;
+                            setDropIndex(null);
+                            event.currentTarget.releasePointerCapture(event.pointerId);
+                          }}
+                        >
+                          <GripVertical size={12} />
+                        </button>
+                        {closable && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              closePanel(def.id);
+                            }}
+                            aria-label={`Close ${def.title}`}
+                            className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-white/24 transition hover:bg-white/8 hover:text-white/80"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
+                      </div>
+                    </header>
+
+                    <div className="min-h-0 flex-1 overflow-hidden">
+                      <Component />
+                    </div>
+                  </section>
+
+                  {index < visiblePanels.length - 1 && (
+                    <div
+                      className="group/resize relative z-10 w-2 shrink-0 cursor-col-resize bg-black/10"
+                      onPointerDown={(e) => {
+                        if (e.pointerType === 'mouse') return;
+                        const nextDef = visiblePanels[index + 1];
+                        if (!nextDef) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.currentTarget.setPointerCapture(e.pointerId);
+                        resizing.current = {
+                          id: def.id,
+                          nextId: nextDef.id,
+                          startX: e.clientX,
+                          startSize: basis,
+                          startNextSize: getPanelBasis(nextDef, index + 1),
+                          min,
+                          nextMin: nextDef.minSize ?? 260,
+                        };
+                      }}
+                      onPointerMove={(e) => {
+                        if (!resizing.current || resizing.current.id !== def.id) return;
+                        updateSplitResize(e.clientX);
+                      }}
+                      onPointerUp={(e) => {
+                        if (resizing.current?.id === def.id) stopSplitResize();
+                        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+                          e.currentTarget.releasePointerCapture(e.pointerId);
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        if (e.button !== 0) return;
+                        const nextDef = visiblePanels[index + 1];
+                        if (!nextDef) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        resizing.current = {
+                          id: def.id,
+                          nextId: nextDef.id,
+                          startX: e.clientX,
+                          startSize: basis,
+                          startNextSize: getPanelBasis(nextDef, index + 1),
+                          min,
+                          nextMin: nextDef.minSize ?? 260,
+                        };
+                      }}
+                      onDoubleClick={() => {
+                        const nextDef = visiblePanels[index + 1];
+                        if (!nextDef) return;
+                        if (visiblePanels.length === 2 && hostWidth > 0) {
+                          const available = Math.max(min + (nextDef.minSize ?? 260), hostWidth - SPLIT_HANDLE_WIDTH);
+                          const leftSize = Math.max(min, available * TWO_PANEL_PRIMARY_RATIO);
+                          setPanelSize(def.id, leftSize);
+                          setPanelSize(nextDef.id, Math.max(nextDef.minSize ?? 260, available - leftSize));
+                          return;
+                        }
+                        setPanelSize(def.id, def.defaultSize ?? 340);
+                        setPanelSize(nextDef.id, nextDef.defaultSize ?? 340);
+                      }}
+                      aria-label={`Resize ${def.title}`}
+                    >
+                      <div className="absolute inset-y-2 left-1/2 w-px -translate-x-1/2 rounded-full bg-white/8 transition group-hover/resize:bg-teal-300/55 group-hover/resize:shadow-[0_0_14px_rgba(45,212,191,0.65)]" />
+                      <GripVertical size={12} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white/14 transition group-hover/resize:text-teal-300/80" />
+                    </div>
+                  )}
+                </React.Fragment>
+              );
+            })}
+            {dropIndex === visiblePanels.length && <DropIndicator />}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -222,9 +627,18 @@ function dockStyle(mode: DockMode, h: number, w: number, fr: DockFloatRect): Rea
 }
 
 const MIN_W = 420;
-const MIN_H = 260;
 
-export function EditorDock() {
+export interface EditorDockBrand {
+  name?: string;
+  mark?: React.ReactNode;
+}
+
+export interface EditorDockProps {
+  brand?: EditorDockBrand;
+}
+
+export function EditorDock({ brand }: EditorDockProps = {}) {
+  const brandName = brand?.name ?? 'PANELFLOW';
   // docked size state
   const [heightPct, setHeightPct] = useState(46);    // bottom: % viewport height
   const [sideWidth, setSideWidth] = useState(480);    // left|right: px
@@ -232,59 +646,14 @@ export function EditorDock() {
   const [smooth, setSmooth] = useState(false);
   const dockDragging = useRef(false);
 
-  const scene       = useGraphStore((s) => s.scene);
   const stats       = useGraphStore((s) => s.stats);
-  const updateScene = useGraphStore((s) => s.updateScene);
-  
-  const dockedPanelId  = usePanelOSStore((s) => s.dockedPanelId);
-  const setDockedPanelId = usePanelOSStore((s) => s.setDockedPanelId);
+
   const dockMode       = usePanelOSStore((s) => s.dockMode);
-  const setDockMode    = usePanelOSStore((s) => s.setDockMode);
   const floatRect      = usePanelOSStore((s) => s.dockFloatRect);
   const setFloatRect   = usePanelOSStore((s) => s.setDockFloatRect);
+  const openPanel      = usePanelOSStore((s) => s.openPanel);
 
   const isFloat   = dockMode === 'float';
-  const isSidebar = dockMode === 'left' || dockMode === 'right';
-
-  const dockedPanelDef = dockedPanelId ? getPanelDefinition(dockedPanelId) : null;
-  const DockedPanelComponent = dockedPanelDef?.component;
-  const DockedIcon = dockedPanelDef?.icon;
-
-  const openPanel = useCallback((id: string) => {
-    const { nodes, removeNodes } = useGraphStore.getState();
-    const existingNode = nodes.find(n => n.type === 'os-panel' && (n.data as any).osPanelId === id);
-    
-    // If it's already a node, pop it out of the node graph and dock it.
-    if (existingNode) {
-      removeNodes([existingNode.id]);
-    }
-    
-    // If it's already docked, close it (toggle behavior)
-    if (usePanelOSStore.getState().dockedPanelId === id) {
-      setDockedPanelId(null);
-    } else {
-      setDockedPanelId(id);
-    }
-  }, [setDockedPanelId]);
-
-  const floatDockedPanel = useCallback(() => {
-    if (!dockedPanelId) return;
-    
-    // Find where the docked panel currently is on screen
-    const el = document.getElementById(`docked-panel-container-${dockedPanelId}`);
-    let screenPosition = null;
-    let size = null;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      screenPosition = { x: rect.left, y: rect.top };
-      size = { width: rect.width, height: rect.height };
-    }
-
-    window.dispatchEvent(new CustomEvent('fluidity:float-panel', { 
-      detail: { panelId: dockedPanelId, screenPosition, size } 
-    }));
-    setDockedPanelId(null);
-  }, [dockedPanelId, setDockedPanelId]);
 
   useEffect(() => {
     const handler = (e: Event) => { const id = (e as CustomEvent<string>).detail; if (id) openPanel(id); };
@@ -317,16 +686,16 @@ export function EditorDock() {
       layout="position"
       transition={spring}
     >
-      
+
       {/* ── outer edge-resize handle (docked modes only) ─────────────────── */}
       {!isFloat && (
         <div
           className={`absolute z-30 group ${edgeHandleCls}`}
-          onPointerDown={(e) => { 
-            e.preventDefault(); 
+          onPointerDown={(e) => {
+            e.preventDefault();
             e.currentTarget.setPointerCapture(e.pointerId);
-            setSmooth(false); 
-            dockDragging.current = true; 
+            setSmooth(false);
+            dockDragging.current = true;
           }}
           onPointerMove={(e) => {
             if (!dockDragging.current) return;
@@ -362,7 +731,7 @@ export function EditorDock() {
         {/* LEFT SECTION */}
         <div className="flex items-center gap-3">
           {isFloat && (
-            <button 
+            <button
               className="flex items-center justify-center w-6 h-6 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-1 focus:ring-white/20"
               aria-label="Drag floating dock"
               onPointerDown={(e) => {
@@ -389,9 +758,9 @@ export function EditorDock() {
           )}
           <div className="flex items-center gap-2 pr-2 border-r border-white/10 hidden sm:flex" aria-hidden="true">
              <div className="w-5 h-5 rounded flex items-center justify-center bg-teal-500/10 border border-teal-500/20">
-               <Layers size={10} className="text-teal-400" />
+               {brand?.mark ?? <Layers size={10} className="text-teal-400" />}
              </div>
-             <span className="text-[10px] font-black text-white/80 uppercase tracking-widest">FLUIDITY</span>
+             <span className="text-[10px] font-black text-white/80 uppercase tracking-widest">{brandName}</span>
           </div>
 
           <SceneControls />
@@ -403,13 +772,15 @@ export function EditorDock() {
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-2">
-          {/* perf stats — moved to right and improved */}
+          <LayoutPresetControls />
+
+          {/* perf stats */}
           {(dockMode === 'bottom' || isFloat) && (
-            <div 
+            <div
               className="flex items-center gap-2 bg-black/40 rounded-lg border border-white/5 p-0.5 pr-2.5 shadow-inner hidden lg:flex pointer-events-auto mr-1"
               aria-label="Performance monitor"
             >
-              <div 
+              <div
                 className="flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-teal-500/10 to-teal-500/5 rounded-md border border-teal-500/20 text-[9px] font-bold tracking-wider text-teal-200/80 uppercase shadow-sm"
                 title="Active Renderer"
               >
@@ -424,13 +795,13 @@ export function EditorDock() {
                 <div className="w-[1px] h-3 bg-white/10" />
                 <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400" title="Frame Compute Time" aria-label="Compute Time">
                   <Zap size={10} className="text-yellow-400/70" />
-                  <span className="text-white/90 font-medium">{stats.computeTime || 16.6}</span> 
+                  <span className="text-white/90 font-medium">{stats.computeTime || 16.6}</span>
                   <span className="text-zinc-600">ms</span>
                 </div>
                 <div className="w-[1px] h-3 bg-white/10" />
                 <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400" title="Memory Usage" aria-label="Memory">
                   <Cpu size={10} className="text-emerald-400/70" />
-                  <span className="text-white/90 font-medium">{stats.memory || 110}</span> 
+                  <span className="text-white/90 font-medium">{stats.memory || 110}</span>
                   <span className="text-zinc-600">mb</span>
                 </div>
               </div>
@@ -441,86 +812,12 @@ export function EditorDock() {
         </div>
       </div>
 
-      {/* ── body ─────────────────────────────────────────────────────────── */}
-      <ReactFlowProvider>
-        <div className="flex-1 min-h-0 overflow-hidden flex flex-row relative">
-          {/* left-side icon rail */}
-          {dockMode === 'left' && (
-            <>
-              <IconRail onOpen={openPanel} side="left" />
-              <AnimatePresence initial={false}>
-                {dockedPanelId && DockedPanelComponent && (
-                  <motion.div
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: (dockedPanelDef?.defaultSize ?? 340), opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-                    className="shrink-0 h-full flex items-center justify-start z-10"
-                  >
-                    <PanelChrome
-                      title={dockedPanelDef.title}
-                      icon={DockedIcon}
-                      isDocked={true}
-                      onClose={() => setDockedPanelId(null)}
-                      onToggleFloat={floatDockedPanel}
-                      className="border-l-0 border-r"
-                    >
-                      <div className="p-1 h-full relative">
-                        <DockedPanelComponent />
-                      </div>
-                    </PanelChrome>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          )}
-
-          {/* inner body: graph ONLY */}
-          <div className={`flex-1 min-w-0 min-h-0 flex flex-col relative`}>
-            {/* graph canvas — fills remaining space */}
-            <div className="flex-1 relative min-w-0 min-h-0">
-              <GraphCanvas />
-              <BottomControls />
-            </div>
-          </div>
-          
-          {/* right-side dock panel & icon rail */}
-          {dockMode !== 'left' && (
-            <>
-              {/* Docked side panel slide out */}
-              <AnimatePresence initial={false}>
-                {dockedPanelId && DockedPanelComponent && (
-                  <motion.div
-                    id={`docked-panel-container-${dockedPanelId}`}
-                    key={dockedPanelId}
-                    layoutId={`panel-${dockedPanelId}`}
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: (dockedPanelDef?.defaultSize ?? 340), opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-                    className="shrink-0 h-full flex items-center justify-end z-10"
-                  >
-                    <PanelChrome
-                      title={dockedPanelDef.title}
-                      icon={DockedIcon}
-                      isDocked={true}
-                      onClose={() => setDockedPanelId(null)}
-                      onToggleFloat={floatDockedPanel}
-                    >
-                      <div className="p-1 h-full relative">
-                        <DockedPanelComponent />
-                      </div>
-                    </PanelChrome>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* right-side icon rail (default + float mode) */}
-              <IconRail onOpen={openPanel} side="right" />
-            </>
-          )}
-        </div>
-      </ReactFlowProvider>
+      {/* ── body: rail + panel host ───────────────────────────────────────── */}
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-row relative">
+        {dockMode === 'left' && <IconRail onOpen={openPanel} side="left" />}
+        <PanelHost />
+        {dockMode !== 'left' && <IconRail onOpen={openPanel} side="right" />}
+      </div>
       </div>
 
     </motion.div>

@@ -1,22 +1,19 @@
 /**
- * studio-store.ts — minimal navigation state for the ARTINOS Studio.
+ * studio-store.ts — minimal active-project state for the ARTINOS Studio.
  *
- * Intentionally tiny (no router — ADR-10): just which view is showing and which
- * module is active. The gallery/showcase UI reads this; modules never depend on it.
+ * The viewport renders the active module's live preview; selecting a module loads
+ * it (PANELFLOW auto-generates its control panel in the dock — see useActiveModule).
+ * No router (ADR-10): just which module is active. `null` = empty stage.
  */
 
 import { create } from 'zustand';
 
 export interface StudioState {
-  view: 'gallery' | 'showcase';
   activeModuleId: string | null;
-  openGallery: () => void;
-  openShowcase: (id: string) => void;
+  setActiveModule: (id: string | null) => void;
 }
 
 export const useStudioStore = create<StudioState>((set) => ({
-  view: 'gallery',
   activeModuleId: null,
-  openGallery: () => set({ view: 'gallery', activeModuleId: null }),
-  openShowcase: (id) => set({ view: 'showcase', activeModuleId: id }),
+  setActiveModule: (id) => set({ activeModuleId: id }),
 }));

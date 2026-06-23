@@ -1,6 +1,4 @@
-// studio-theme.ts — ARTINOS design tokens.
-// Seeded from PANELFLOW(UI) `tokens/tokens.ts` (the `-GridDot` bug fixed → `gridDot`).
-// Phase 1 replaces/extends this with the full ported tokens.css + figma round-trip.
+// studio-theme.ts — PANELFLOW design tokens.
 
 export const THEME = {
   bg: '#0a0a0a',
@@ -28,12 +26,12 @@ export const token = (name: ThemeKey): string => `var(--${name})`;
 /** Inject the tokens as CSS variables + a minimal reset. Idempotent. */
 export function injectTheme(): void {
   if (typeof document === 'undefined') return;
-  if (document.getElementById('artinos-theme')) return;
+  if (document.getElementById('panelflow-theme')) return;
   const vars = Object.entries(THEME)
     .map(([k, v]) => `--${k}: ${v};`)
     .join('\n  ');
   const style = document.createElement('style');
-  style.id = 'artinos-theme';
+  style.id = 'panelflow-theme';
   style.textContent = `:root {\n  ${vars}\n}
   * { box-sizing: border-box; }
   html, body, #root { height: 100%; margin: 0; }

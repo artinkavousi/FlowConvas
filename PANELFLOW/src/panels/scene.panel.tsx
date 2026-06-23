@@ -1,270 +1,280 @@
-import React from 'react';
-import { 
-  Camera, Sun, Zap, Monitor, Sparkles, Layers, Box, 
-  Grid, Move3d, Eye, PaintBucket, Focus, Moon, Cone
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  Activity,
+  BarChart3,
+  CheckCircle2,
+  Cpu,
+  Eye,
+  Grid3X3,
+  Monitor,
+  Orbit,
+  ScanLine,
+  Sparkles,
+  Sun,
+  Workflow,
+  Zap,
 } from 'lucide-react';
 import { definePanel } from '@/panel-os/define-panel';
 import { PanelShell } from '@/panel-os/panel-shell';
-import { useGraphStore } from '@/graph/graph-store';
+import { useGraphStore, type SceneSettings } from '@/graph/graph-store';
 import { defaultPanelCapabilities } from '@/panel-os/panel-types';
+import { detect } from '@/WebGPUCapabilities';
+import { allNodes } from '@/graph/NodeDefinitions';
 
-function VisualToggle({ icon: Icon, label, checked, onChange }: any) {
-  return (
-    <button
-      onClick={() => onChange(!checked)}
-      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 ${
-        checked 
-          ? 'bg-white/10 text-white border-white/20 shadow-sm inset-shadow-sm' 
-          : 'bg-black/30 border-white/5 text-white/40 hover:bg-white/5 hover:text-white/70'
-      }`}
-    >
-      <Icon size={18} className="mb-2" />
-      <span className="text-[10px] font-semibold tracking-wider uppercase text-center leading-tight">
-        {label}
-      </span>
-    </button>
-  );
-}
+type Option<T extends string> = { value: T; label: string };
 
-function ChipSelector({ label, value, options, onChange }: any) {
+function PanelKicker({ icon: Icon, title, detail }: { icon: any; title: string; detail: string }) {
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">{label}</span>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map((opt: any) => {
-          const isActive = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              onClick={() => onChange(opt.value)}
-              className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${
-                isActive
-                  ? 'bg-white text-black shadow-sm'
-                  : 'bg-black/40 border border-white/10 text-white/50 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              {opt.label}
-            </button>
-          );
-        })}
+    <div className="flex items-start justify-between gap-3 rounded-xl border border-white/8 bg-white/[0.035] p-3">
+      <div className="flex items-start gap-3 min-w-0">
+        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
+          <Icon size={15} />
+        </div>
+        <div className="min-w-0">
+          <div className="text-[11px] font-black uppercase tracking-[0.22em] text-white/80">{title}</div>
+          <div className="mt-1 text-[11px] leading-relaxed text-white/42">{detail}</div>
+        </div>
       </div>
     </div>
   );
 }
 
-function SceneView() {
-  const sceneSettings = useGraphStore(s => s.scene);
-  const updateScene = useGraphStore(s => s.updateScene);
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="space-y-2.5">
+      <div className="text-[9px] font-black uppercase tracking-[0.24em] text-white/35">{title}</div>
+      {children}
+    </section>
+  );
+}
+
+function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: Option<T>[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="grid gap-1 rounded-xl border border-white/8 bg-black/28 p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+      {options.map((option) => {
+        const active = option.value === value;
+        return (
+          <button
+            key={option.value}
+            onClick={() => onChange(option.value)}
+            className={
+              'min-h-8 rounded-lg px-2 text-[10px] font-black uppercase tracking-[0.12em] transition ' +
+              (active
+                ? 'bg-white text-black shadow-[0_0_18px_rgba(255,255,255,0.12)]'
+                : 'text-white/45 hover:bg-white/8 hover:text-white/80')
+            }
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ToggleTile({
+  icon: Icon,
+  label,
+  checked,
+  onChange,
+}: {
+  icon: any;
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      className={
+        'flex min-h-[70px] flex-col items-start justify-between rounded-xl border p-3 text-left transition ' +
+        (checked
+          ? 'border-teal-300/30 bg-teal-300/[0.085] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+          : 'border-white/7 bg-black/25 text-white/42 hover:border-white/14 hover:bg-white/[0.045] hover:text-white/70')
+      }
+    >
+      <Icon size={16} className={checked ? 'text-teal-300' : 'text-white/35'} />
+      <span className="text-[10px] font-black uppercase tracking-[0.14em] leading-tight">{label}</span>
+    </button>
+  );
+}
+
+function Metric({ icon: Icon, label, value, sub }: { icon: any; label: string; value: string | number; sub: string }) {
+  return (
+    <div className="rounded-xl border border-white/7 bg-black/24 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <Icon size={14} className="text-teal-300/80" />
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/32">{label}</span>
+      </div>
+      <div className="mt-3 font-mono text-lg font-bold leading-none text-white/88">{value}</div>
+      <div className="mt-1 text-[9px] uppercase tracking-[0.16em] text-white/30">{sub}</div>
+    </div>
+  );
+}
+
+function HealthRow({ label, detail }: { label: string; detail: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-white/[0.025] px-3 py-2">
+      <div>
+        <div className="text-[11px] font-semibold text-white/70">{label}</div>
+        <div className="text-[9px] uppercase tracking-[0.16em] text-white/28">{detail}</div>
+      </div>
+      <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.16em] text-emerald-300">
+        <CheckCircle2 size={12} />
+        Ready
+      </div>
+    </div>
+  );
+}
+
+function useFrameFps() {
+  const [fps, setFps] = useState(60);
+  const frames = useRef(0);
+  const last = useRef(performance.now());
+
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      frames.current += 1;
+      const now = performance.now();
+      if (now - last.current >= 1000) {
+        setFps(frames.current);
+        frames.current = 0;
+        last.current = now;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return fps;
+}
+
+function PipelineView() {
+  const scene = useGraphStore((s) => s.scene);
+  const updateScene = useGraphStore((s) => s.updateScene);
+  const stats = useGraphStore((s) => s.stats);
+  const [detectedBackend, setDetectedBackend] = useState('detecting');
+  const fps = useFrameFps();
+  const nodesCount = useMemo(() => allNodes().length, []);
+
+  useEffect(() => {
+    let alive = true;
+    detect().then((caps) => alive && setDetectedBackend(caps.backend));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const patch = (next: Partial<SceneSettings>) => updateScene(next);
 
   return (
     <PanelShell>
-      <div className="h-full overflow-y-auto custom-scrollbar p-4 space-y-8 w-full text-sm">
-        
-        {/* Header Block */}
-        <div className="flex justify-between items-center bg-white/[0.02] p-4 rounded-xl border border-white/5">
-          <div>
-            <h2 className="text-white/80 font-bold uppercase tracking-widest text-[11px] mb-1 flex items-center gap-2">
-              <Zap size={12} className="text-[var(--color-accent)]" /> Render Pipeline
-            </h2>
-            <div className="text-white/40 text-[10px] uppercase tracking-wider font-mono">
-              Engine Settings & Visuals
-            </div>
-          </div>
-          <div className="flex gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
-             <button 
-                className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md transition ${sceneSettings.backend === 'webgpu' ? 'bg-white/10 text-white shadow-sm' : 'text-white/30 hover:text-white/60'}`}
-                onClick={() => updateScene({ backend: 'webgpu' })}
-             >WebGPU</button>
-             <button 
-                className={`px-3 py-1 text-[10px] font-bold uppercase rounded-md transition ${sceneSettings.backend === 'webgl' ? 'bg-white/10 text-white shadow-sm' : 'text-white/30 hover:text-white/60'}`}
-                onClick={() => updateScene({ backend: 'webgl' })}
-             >WebGL2</button>
-          </div>
-        </div>
-
-        {/* Global Lighting / Env */}
-        <ChipSelector 
-          label="Environment HDRI"
-          value={sceneSettings.env}
-          onChange={(val: any) => updateScene({ env: val })}
-          options={[
-            { value: 'none', label: 'Void' },
-            { value: 'studio', label: 'Studio' },
-            { value: 'city', label: 'City Dusk' },
-            { value: 'sunset', label: 'Sunset' },
-            { value: 'night', label: 'Night' },
-            { value: 'warehouse', label: 'Warehouse' }
-          ]}
+      <div className="h-full w-full overflow-y-auto custom-scrollbar space-y-5">
+        <PanelKicker
+          icon={Workflow}
+          title="Scene Settings"
+          detail="Viewport, camera, rendering, performance monitors, and pipeline health for the active workspace."
         />
 
-        {/* Look Dev & Sandbox */}
-        <div className="space-y-4">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Look Dev Sandbox</span>
-          
-          <div className="grid grid-cols-2 gap-3 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
-             <ChipSelector 
-                label="Geometry Preset"
-                value={sceneSettings.geometry}
-                onChange={(val: any) => updateScene({ geometry: val })}
-                options={[
-                  { value: 'sphere', label: 'Sphere' },
-                  { value: 'box', label: 'Box' },
-                  { value: 'plane', label: 'Plane' },
-                  { value: 'torus', label: 'Torus' }
-                ]}
-              />
-
-              <ChipSelector 
-                label="Material Class"
-                value={sceneSettings.material}
-                onChange={(val: any) => updateScene({ material: val })}
-                options={[
-                  { value: 'standard', label: 'Standard' },
-                  { value: 'physical', label: 'Physical (PBR)' },
-                  { value: 'toon', label: 'Toon' },
-                  { value: 'transmission', label: 'Glass' },
-                  { value: 'subsurface', label: 'Skin' },
-                  { value: 'custom_tsl', label: 'Custom TSL' }
-                ]}
-              />
-          </div>
-        </div>
-
-        {/* Next-Gen Effects Grid */}
-        <div className="space-y-3">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 flex items-center gap-2">
-            <Sparkles size={12} className="text-amber-400" /> Post-FX & Quality Adjustments
-          </span>
-          <div className="grid grid-cols-3 gap-2">
-            <VisualToggle 
-              icon={Sun} label="Shadows" color="amber"
-              checked={sceneSettings.shadows} onChange={(c: boolean) => updateScene({ shadows: c })} 
-            />
-            <VisualToggle 
-              icon={Moon} label="Ambient Occlusion" color="purple"
-              checked={sceneSettings.ao} onChange={(c: boolean) => updateScene({ ao: c })} 
-            />
-            <VisualToggle 
-              icon={Layers} label="Global Illumination" color="rose"
-              checked={sceneSettings.ssgi} onChange={(c: boolean) => updateScene({ ssgi: c })} 
-            />
-            <VisualToggle 
-              icon={PaintBucket} label="SSR Reflections" color="cyan"
-              checked={sceneSettings.ssr} onChange={(c: boolean) => updateScene({ ssr: c })} 
-            />
-            <VisualToggle 
-              icon={Sun} label="Bloom Emission" color="emerald"
-              checked={sceneSettings.bloom} onChange={(c: boolean) => updateScene({ bloom: c })} 
-            />
-            <VisualToggle 
-              icon={Focus} label="Depth of Field" color="blue"
-              checked={sceneSettings.dof} onChange={(c: boolean) => updateScene({ dof: c })} 
-            />
-          </div>
-        </div>
-
-        {/* Color Science */}
-        <div className="grid grid-cols-2 gap-4">
-          <ChipSelector 
-            label="Anti-Aliasing"
-            value={sceneSettings.antialiasing}
-            onChange={(val: any) => updateScene({ antialiasing: val })}
+        <Section title="Viewport">
+          <Segmented
+            value={scene.viewMode}
+            onChange={(viewMode) => patch({ viewMode })}
             options={[
-              { value: 'msaa', label: 'Hardware MSAA' },
-              { value: 'smaa', label: 'SMAA (Post)' },
-              { value: 'fxaa', label: 'FXAA (Post)' },
-              { value: 'none', label: 'Off' }
+              { value: '3d', label: '3D' },
+              { value: '2d', label: '2D' },
             ]}
           />
-          <ChipSelector 
-            label="Tone Mapping"
-            value={sceneSettings.toneMapping}
-            onChange={(val: any) => updateScene({ toneMapping: val })}
+          <div className="grid grid-cols-2 gap-2">
+            <ToggleTile icon={Orbit} label="Auto Orbit" checked={scene.autoRotate} onChange={(autoRotate) => patch({ autoRotate })} />
+            <ToggleTile icon={Grid3X3} label="Floor Grid" checked={scene.showGrid} onChange={(showGrid) => patch({ showGrid })} />
+            <ToggleTile icon={Eye} label="Gizmos" checked={scene.showGizmos} onChange={(showGizmos) => patch({ showGizmos })} />
+            <ToggleTile icon={ScanLine} label="Wireframe" checked={scene.wireframe} onChange={(wireframe) => patch({ wireframe })} />
+          </div>
+        </Section>
+
+        <Section title="Render">
+          <Segmented
+            value={scene.backend}
+            onChange={(backend) => patch({ backend })}
             options={[
-              { value: 'agx', label: 'AgX (Filmic)' },
-              { value: 'aces', label: 'ACES (HDR)' },
+              { value: 'webgpu', label: 'WebGPU' },
+              { value: 'webgl', label: 'WebGL2' },
+            ]}
+          />
+          <Segmented
+            value={scene.toneMapping}
+            onChange={(toneMapping) => patch({ toneMapping })}
+            options={[
+              { value: 'agx', label: 'AgX' },
+              { value: 'aces', label: 'ACES' },
               { value: 'cineon', label: 'Cineon' },
-              { value: 'linear', label: 'Linear' }
+              { value: 'linear', label: 'Linear' },
             ]}
           />
-        </div>
+          <Segmented
+            value={scene.material}
+            onChange={(material) => patch({ material })}
+            options={[
+              { value: 'custom_tsl', label: 'TSL' },
+              { value: 'physical', label: 'PBR' },
+              { value: 'transmission', label: 'Glass' },
+            ]}
+          />
+        </Section>
 
-        {/* Camera & Overlays */}
-        <div className="space-y-4 pt-4 border-t border-white/5">
-           <span className="text-[10px] uppercase font-bold tracking-widest text-white/40">Viewport State</span>
-           
-           <div className="flex gap-2">
-             <button
-               onClick={() => updateScene({ viewMode: '3d' })}
-               className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
-                 sceneSettings.viewMode === '3d' ? 'bg-white/10 border-white/20 text-white' : 'bg-black/30 border-white/5 text-white/40 hover:bg-white/5'
-               }`}
-             >
-               <Camera size={20} className="mb-2" />
-               <span className="text-[10px] font-bold uppercase tracking-widest">3D Orbit</span>
-             </button>
-             <button
-               onClick={() => updateScene({ viewMode: '2d' })}
-               className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
-                 sceneSettings.viewMode === '2d' ? 'bg-white/10 border-white/20 text-white' : 'bg-black/30 border-white/5 text-white/40 hover:bg-white/5'
-               }`}
-             >
-               <Monitor size={20} className="mb-2" />
-               <span className="text-[10px] font-bold uppercase tracking-widest">2D Ortho</span>
-             </button>
-           </div>
+        <Section title="Quality">
+          <div className="grid grid-cols-3 gap-2">
+            <ToggleTile icon={Sun} label="Shadows" checked={scene.shadows} onChange={(shadows) => patch({ shadows })} />
+            <ToggleTile icon={Sparkles} label="Bloom" checked={scene.bloom} onChange={(bloom) => patch({ bloom })} />
+            <ToggleTile icon={Activity} label="AO" checked={scene.ao} onChange={(ao) => patch({ ao })} />
+            <ToggleTile icon={Zap} label="SSGI" checked={scene.ssgi} onChange={(ssgi) => patch({ ssgi })} />
+            <ToggleTile icon={Monitor} label="SSR" checked={scene.ssr} onChange={(ssr) => patch({ ssr })} />
+            <ToggleTile icon={Cpu} label="DOF" checked={scene.dof} onChange={(dof) => patch({ dof })} />
+          </div>
+        </Section>
 
-           <div className="grid grid-cols-2 gap-2">
-             <label className="flex items-center gap-3 bg-black/40 hover:bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer transition-colors group">
-               <input type="checkbox" checked={sceneSettings.autoRotate} onChange={e => updateScene({ autoRotate: e.target.checked })} className="accent-blue-500" />
-               <span className="text-xs font-semibold uppercase tracking-wider text-white/60 group-hover:text-white">Auto-Orbit</span>
-             </label>
-             <label className="flex items-center gap-3 bg-black/40 hover:bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer transition-colors group">
-               <input type="checkbox" checked={sceneSettings.wireframe} onChange={e => updateScene({ wireframe: e.target.checked })} className="accent-blue-500" />
-               <span className="text-xs font-semibold uppercase tracking-wider text-white/60 group-hover:text-white">Wireframe</span>
-             </label>
-             <label className="flex items-center gap-3 bg-black/40 hover:bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer transition-colors group">
-               <input type="checkbox" checked={sceneSettings.showGrid} onChange={e => updateScene({ showGrid: e.target.checked })} className="accent-blue-500" />
-               <span className="text-xs font-semibold uppercase tracking-wider text-white/60 group-hover:text-white">Floor Grid</span>
-             </label>
-             <label className="flex items-center gap-3 bg-black/40 hover:bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer transition-colors group">
-               <input type="checkbox" checked={sceneSettings.showGizmos} onChange={e => updateScene({ showGizmos: e.target.checked })} className="accent-blue-500" />
-               <span className="text-xs font-semibold uppercase tracking-wider text-white/60 group-hover:text-white">Transform Gizmos</span>
-             </label>
-             <label className="flex items-center gap-3 bg-black/40 hover:bg-white/5 p-3 rounded-xl border border-white/5 cursor-pointer transition-colors group">
-               <input type="checkbox" checked={sceneSettings.volumetrics} onChange={e => updateScene({ volumetrics: e.target.checked })} className="accent-blue-500" />
-               <span className="text-xs font-semibold uppercase tracking-wider text-white/60 group-hover:text-white">Volumetric Fog</span>
-             </label>
-           </div>
+        <Section title="Telemetry">
+          <div className="grid grid-cols-2 gap-2">
+            <Metric icon={Activity} label="FPS" value={stats.fps || fps} sub="viewport loop" />
+            <Metric icon={Cpu} label="Backend" value={(stats.renderer || detectedBackend).toUpperCase()} sub="detected" />
+            <Metric icon={Zap} label="Compute" value={`${stats.computeTime || 16.6}ms`} sub="frame budget" />
+            <Metric icon={BarChart3} label="Nodes" value={nodesCount} sub="definitions" />
+          </div>
+        </Section>
 
-           <ChipSelector 
-              label="Debug Render View"
-              value={sceneSettings.debugMode}
-              onChange={(val: any) => updateScene({ debugMode: val })}
-              options={[
-                { value: 'none', label: 'Beauty (Full Base)' },
-                { value: 'normals', label: 'World Normals' },
-                { value: 'depth', label: 'Z-Depth' },
-                { value: 'uv', label: 'UV Coords' }
-              ]}
-           />
-        </div>
-
+        <Section title="Health">
+          <div className="space-y-2">
+            <HealthRow label="Panel registry" detail="dynamic + auto panels" />
+            <HealthRow label="Control bridge" detail="schema and instance values" />
+            <HealthRow label="Graph runtime" detail="nodes, edges, serialization" />
+          </div>
+        </Section>
       </div>
     </PanelShell>
   );
 }
 
 export const ScenePanel = definePanel({
-  id: 'scene',
-  title: 'Scene Control',
-  description: 'Global rendering and viewport configuration',
-  icon: Zap,
+  id: 'scene-settings',
+  title: 'Scene Settings',
+  description: 'Viewport, camera, render, performance, and pipeline settings.',
+  icon: Workflow,
   defaultPlacement: 'right',
-  defaultSize: 380,
+  defaultSize: 390,
   minSize: 320,
-  maxSize: 600,
+  maxSize: 620,
   capabilities: { ...defaultPanelCapabilities },
-  component: SceneView,
-  tags: ['scene', 'render', 'effects'],
+  component: PipelineView,
+  tags: ['core', 'scene', 'render', 'engine', 'diagnostics'],
 });

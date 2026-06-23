@@ -1,24 +1,25 @@
 {
   "name": "@artinos/panelflow",
-  "private": true,
   "version": "0.1.0",
   "description": "High-end reusable panel system for building interactive visual tools, control panels, and editor workspaces",
   "type": "module",
   "main": "dist/panelflow.cjs.js",
   "module": "dist/panelflow.es.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/panelflow.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/panelflow.d.ts",
       "import": "./dist/panelflow.es.js",
       "require": "./dist/panelflow.cjs.js"
     },
     "./styles": "./dist/panelflow.css",
-    "./frost": "./src/lib/tweakpane_frost/frost-tweakpane.js"
+    "./frost": {
+      "import": "./dist/frost-tweakpane.es.js",
+      "require": "./dist/frost-tweakpane.cjs.js"
+    }
   },
   "files": [
-    "dist",
-    "src/lib/tweakpane_frost"
+    "dist"
   ],
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

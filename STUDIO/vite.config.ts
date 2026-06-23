@@ -21,5 +21,18 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: { include: ['react', 'react-dom', 'react/jsx-runtime'] },
+  build: {
+    chunkSizeWarningLimit: 850,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('tweakpane')) return 'tweakpane';
+          if (id.includes('three')) return 'three';
+          if (id.includes('@xyflow') || id.includes('reactflow')) return 'graph';
+          if (id.includes('framer-motion') || id.includes('/motion/')) return 'motion';
+        },
+      },
+    },
+  },
   server: { port: 3001, host: '0.0.0.0' },
 });

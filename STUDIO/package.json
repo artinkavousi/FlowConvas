@@ -12,6 +12,7 @@
     "check-registry": "tsx scripts/check-registry.ts"
   },
   "dependencies": {
+    "@artinos/panelflow": "file:../PANELFLOW",
     "clsx": "^2.1.1",
     "lucide-react": "^0.546.0",
     "react": "^19.0.1",

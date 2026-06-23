@@ -2,8 +2,8 @@
  * seed-graph.ts — Demo-only seed graph.
  *
  * The core graph store starts EMPTY so the package is portable. The demo app
- * hydrates this seed on first load to tell the ARTINOS story the moment the
- * studio opens: a real TSL material graph (tsl/uv → wave → gradient → material).
+ * hydrates this seed on first load to show a real TSL material graph
+ * (tsl/uv -> wave -> gradient -> material).
  */
 
 import type { FluidityNode, FluidityEdge } from '@/graph/graph-store';

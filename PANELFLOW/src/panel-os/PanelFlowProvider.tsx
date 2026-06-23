@@ -10,7 +10,13 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { injectTheme } from '@/studio-theme';
-import { onRegistryChange, getRegisteredComponents, generatePanelFromSchema } from '@/control-engine';
+import {
+  onRegistryChange,
+  getRegisteredComponents,
+  getRegisteredComponentInstances,
+  getComponentSchema,
+  generatePanelFromSchema,
+} from '@/control-engine';
 import { PANEL_REGISTRY, registerPanel, unregisterPanel } from '@/panel-os/panel-registry';
 import { usePanelOSStore } from '@/panel-os/panel-store';
 
@@ -43,16 +49,36 @@ export function PanelFlowProvider({
   useEffect(() => {
     const syncPanels = () => {
       const schemas = getRegisteredComponents();
-      const liveAutoIds = new Set(schemas.map((s) => `auto-${s.id}`));
+      const instances = getRegisteredComponentInstances();
+      const instancedSchemaIds = new Set(instances.map((instance) => instance.schemaId));
+      const liveAutoIds = new Set([
+        ...schemas.filter((schema) => !instancedSchemaIds.has(schema.id)).map((schema) => `auto-${schema.id}`),
+        ...instances.map((instance) => `auto-${instance.instanceId}`),
+      ]);
 
-      // Add panels for newly registered components.
+      // Add panels for newly registered schema-only components.
       for (const schema of schemas) {
+        if (instancedSchemaIds.has(schema.id)) continue;
         const panelId = `auto-${schema.id}`;
         if (!PANEL_REGISTRY[panelId]) {
           try {
             registerPanel(generatePanelFromSchema(schema));
           } catch (e) {
             console.warn(`[PanelFlow] Failed to generate panel for ${schema.id}:`, e);
+          }
+        }
+      }
+
+      // Add panels for concrete mounted instances.
+      for (const instance of instances) {
+        const schema = getComponentSchema(instance.schemaId);
+        if (!schema) continue;
+        const panelId = `auto-${instance.instanceId}`;
+        if (!PANEL_REGISTRY[panelId]) {
+          try {
+            registerPanel(generatePanelFromSchema(schema, instance));
+          } catch (e) {
+            console.warn(`[PanelFlow] Failed to generate panel for ${instance.instanceId}:`, e);
           }
         }
       }

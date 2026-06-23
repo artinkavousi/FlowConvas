@@ -75,7 +75,7 @@ export function GooeySlider({
 
   const [displayNumber, setDisplayNumber] = useState(value);
   useEffect(() => {
-    return currentDisplayValue.onChange((v) => {
+    return currentDisplayValue.on("change", (v) => {
       setDisplayNumber(v);
     });
   }, [currentDisplayValue]);

@@ -71,7 +71,7 @@ export function BubbleRatingSlider({
 
   const [displayIndex, setDisplayIndex] = useState(value);
   useEffect(() => {
-    return currentDisplayValue.onChange((v) => {
+    return currentDisplayValue.on("change", (v) => {
       setDisplayIndex(v);
     });
   }, [currentDisplayValue]);

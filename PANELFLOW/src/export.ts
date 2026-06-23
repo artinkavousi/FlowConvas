@@ -17,7 +17,7 @@ export type { PanelDefinition, PanelCapabilities } from './panel-os/panel-types'
 export type { DockMode, DockFloatRect } from './panel-os/panel-store';
 
 // ── Shell Components ──────────────────────────────────────────────────────
-export { EditorDock } from './shell/editor-dock';
+export { EditorDock, type EditorDockBrand, type EditorDockProps } from './shell/editor-dock';
 export { IconRail, type IconRailProps } from './shell/icon-rail';
 export { PanelChrome } from './shell/panel-chrome';
 export { CommandPalette, openPanelById } from './shell/command-palette';
@@ -35,13 +35,19 @@ export type { FluidityNode, FluidityNodeData, FluidityEdge, SceneSettings, Stats
 export {
   registerComponent,
   unregisterComponent,
+  registerComponentInstance,
+  unregisterComponentInstance,
   getRegisteredComponents,
+  getRegisteredComponentInstances,
+  getComponentSchema,
   generatePanelFromSchema,
   useBridgeStore,
   initializeBridgeDefaults,
 } from './control-engine';
 export type {
   ComponentSchema,
+  ComponentInstance,
+  RegisterComponentInstanceOptions,
   ParameterDef,
   ModifierDef,
   ControlBridge,

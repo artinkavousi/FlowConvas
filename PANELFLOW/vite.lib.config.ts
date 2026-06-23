@@ -32,10 +32,13 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/export.ts'),
+      entry: {
+        panelflow: path.resolve(__dirname, 'src/export.ts'),
+        'frost-tweakpane': path.resolve(__dirname, 'src/lib/tweakpane_frost/frost-tweakpane.js'),
+      },
       name: 'PanelFlow',
       formats: ['es', 'cjs'],
-      fileName: (format) => `panelflow.${format}.js`,
+      fileName: (format, entryName) => `${entryName}.${format}.js`,
     },
     rollupOptions: {
       external,
@@ -47,6 +50,7 @@ export default defineConfig({
       },
     },
     cssCodeSplit: false,
+    chunkSizeWarningLimit: 850,
     outDir: 'dist',
   },
 });

@@ -1,21 +1,22 @@
 import { useEffect, type ReactNode } from 'react';
 import { ViewportSlot } from '@/shell/viewport-slot';
-import { EditorDock } from '@/shell/editor-dock';
+import { EditorDock, type EditorDockBrand } from '@/shell/editor-dock';
 import { hydrateGraph, useGraphStore, type FluidityNode, type FluidityEdge } from '@/graph/graph-store';
 import { usePanelOSStore } from '@/panel-os/panel-store';
 import { CommandPalette, openPanelById } from '@/shell/command-palette';
-import { Layers } from 'lucide-react';
 
-const RAIL_PANELS = ['scene', 'inspector', 'engine-status', 'code'];
+const RAIL_PANELS = ['scene-settings', 'inspector', 'library', 'graph'];
 
 export interface WorkspaceProps {
   /** Host-provided viewport content. If omitted, shows an empty viewport area. */
   viewport?: ReactNode;
   /** Optional seed graph loaded on first run when nothing is persisted. */
   seed?: { nodes: FluidityNode[]; edges: FluidityEdge[] };
+  /** Optional host branding rendered in PANELFLOW chrome. */
+  brand?: EditorDockBrand;
 }
 
-export function Workspace({ viewport, seed }: WorkspaceProps) {
+export function Workspace({ viewport, seed, brand }: WorkspaceProps) {
   const togglePalette = usePanelOSStore((s) => s.toggleCommandPalette);
 
   useEffect(() => { hydrateGraph(seed); }, []);
@@ -55,7 +56,7 @@ export function Workspace({ viewport, seed }: WorkspaceProps) {
       />
 
       <ViewportSlot>{viewport}</ViewportSlot>
-      <EditorDock />
+      <EditorDock brand={brand} />
       <CommandPalette />
     </main>
   );

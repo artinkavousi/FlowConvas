@@ -46,7 +46,7 @@ export function CommandPalette() {
               No results
             </Command.Empty>
             <Command.Group heading="Panels" className="text-[9px] uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              {PANEL_DEFINITIONS().map((def) => {
+              {PANEL_DEFINITIONS().filter((def) => !def.id.startsWith('auto-') || def.tags?.includes('command')).map((def) => {
                 const Icon = def.icon;
                 return (
                   <Command.Item

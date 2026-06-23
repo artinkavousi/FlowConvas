@@ -6,6 +6,7 @@
  */
 
 import { useRef, useEffect, useCallback, type RefObject } from 'react';
+import './frost-tweakpane.css';
 
 interface FrostPaneBinding {
   key: string;

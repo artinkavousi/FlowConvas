@@ -6,35 +6,41 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .frost-tweakpane {
-  /* ─── COLORS ─────────────────────────────────────────────────────────────── */
-  --frost-accent: #6ec9b8;                          /* Primary accent color (teal) */
-  --frost-accent-glow: rgba(110, 201, 184, 0.35);  /* Glow/shadow color for accent */
-  
-  /* ─── GLASS EFFECTS ──────────────────────────────────────────────────────── */
-  --frost-glass-bg: rgba(255, 255, 255, 0.03);         /* Very neutral, ultra-low opacity */
-  --frost-glass-border: rgba(255, 255, 255, 0.08);     /* Soft, subtle border */
-  --frost-glass-border-subtle: rgba(255,255,255,0.04); /* Barely visible structure */
-  --frost-glass-highlight: rgba(255, 255, 255, 0.08);     /* Soft top highlight */
-  --frost-glass-shadow: rgba(0,0,0,0.1);               /* Very soft depth */
-  
+  /* ─── COLORS — inherit the PANELFLOW system palette (tokens.css) ──── */
+  --frost-accent: var(--color-accent, #2dd4bf);            /* system teal */
+  --frost-accent-glow: rgba(45, 212, 191, 0.16);
+
+  /* ─── GLASS EFFECTS — softer so panels read as part of the dock, not cards ─ */
+  --frost-glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
+  --frost-glass-border: rgba(255, 255, 255, 0.105);
+  --frost-glass-border-subtle: rgba(255, 255, 255, 0.065);
+  --frost-glass-highlight: rgba(255, 255, 255, 0.085);
+  --frost-glass-shadow: rgba(0, 0, 0, 0.22);
+
+  /* ─── SLIDER FILL — accent ramp instead of the old green ──────────────────── */
+  --frost-slider-start: #178577;
+  --frost-slider-mid: var(--color-accent, #2dd4bf);
+  --frost-slider-end: #7ff0de;
+
   /* ─── NOISE PATTERN (SVG) ────────────────────────────────────────────────── */
   --frost-noise-pattern: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
-  
+
   /* ─── INPUTS ─────────────────────────────────────────────────────────────── */
-  --frost-input-bg: rgba(0,0,0,0.25);              /* Input field background */
-  
-  /* ─── TEXT ───────────────────────────────────────────────────────────────── */
-  --frost-text: rgba(255,255,255,0.92);            /* Primary text color */
-  --frost-text-muted: rgba(255,255,255,0.45);      /* Secondary/muted text */
-  
-  /* ─── BORDER RADIUS ──────────────────────────────────────────────────────── */
-  --frost-radius: 12px;                            /* Large radius (folders, panels) */
-  --frost-radius-sm: 8px;                          /* Medium radius (buttons, tabs) */
-  --frost-radius-xs: 5px;                          /* Small radius (inputs) */
-  
-  /* ─── BASE STYLES ────────────────────────────────────────────────────────── */
+  --frost-input-bg: rgba(0, 0, 0, 0.34);
+
+  /* ─── TEXT — system text tokens ──────────────────────────────────────────── */
+  --frost-text: var(--color-text, rgba(255, 255, 255, 0.92));
+  --frost-text-muted: var(--color-text-soft, rgba(255, 255, 255, 0.45));
+
+  /* ─── BORDER RADIUS — system radius scale ────────────────────────────────── */
+  --frost-radius: var(--radius-md, 12px);          /* folders */
+  --frost-radius-sm: var(--radius-sm, 8px);        /* buttons, tabs */
+  --frost-radius-xs: 6px;                          /* inputs */
+
+  /* ─── BASE STYLES — match the app body font ──────────────────────────────── */
   width: 100%;
-  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'DM Sans', sans-serif;
+  padding: 8px;
 }
 
 .frost-tweakpane__pane { padding: 0; }
@@ -145,12 +151,10 @@
   backdrop-filter: blur(40px) saturate(100%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(100%) !important;
   border: 1px solid var(--frost-glass-border-subtle) !important;
-  border-radius: var(--frost-radius) !important;
-  margin-bottom: var(--frost-folder-margin-bottom, 8px) !important;
+  border-radius: 10px !important;
+  margin-bottom: var(--frost-folder-margin-bottom, 10px) !important;
   overflow: visible !important;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 30px rgba(0, 0, 0, 0.16) !important;
   transition: background 0.2s, border-color 0.2s !important;
 }
 /* Frosted noise overlay on folders */
@@ -185,21 +189,21 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  padding: var(--frost-folder-title-padding, 10px) 12px !important;
-  background: transparent !important;
+  padding: var(--frost-folder-title-padding, 9px) 12px !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.055), rgba(255,255,255,0.015)) !important;
   border: none !important;
   border-bottom: 1px solid var(--frost-glass-border-subtle) !important;
   cursor: pointer !important;
-  min-height: 38px !important;
+  min-height: 34px !important;
 }
 .frost-tweakpane .tp-fldv_t:hover { background: rgba(255,255,255,0.02) !important; }
 
 /* Folder Title Text */
 .frost-tweakpane .tp-fldv_b {
   flex: 1 !important;
-  font-size: var(--frost-folder-title-font-size, 10px) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.04em !important;
+  font-size: var(--frost-folder-title-font-size, 9px) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
   color: var(--frost-text) !important;
   background: none !important;
@@ -221,7 +225,7 @@
 
 /* Folder Content - minimal padding */
 .frost-tweakpane .tp-fldv_c {
-  padding: 6px 8px !important;
+  padding: 8px !important;
   background: transparent !important;
   overflow: visible !important;
 }
@@ -236,21 +240,25 @@
 .frost-tweakpane .tp-lblv {
   display: flex !important;
   align-items: center !important;
-  gap: 0 !important;
-  margin-bottom: 4px !important;
-  padding: 0 !important;
-  min-height: 22px !important;
+  gap: 8px !important;
+  margin-bottom: 6px !important;
+  padding: 7px 8px !important;
+  min-height: 32px !important;
+  background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18)) !important;
+  border: 1px solid rgba(255,255,255,0.055) !important;
+  border-radius: 8px !important;
 }
 .frost-tweakpane .tp-lblv:last-child { margin-bottom: 0 !important; }
 /* Label width - increased for better readability */
 .frost-tweakpane .tp-lblv_l {
-  font-size: 10px !important;
-  font-weight: 500 !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
   color: var(--frost-text-muted) !important;
-  width: 60px !important;
-  min-width: 60px !important;
+  width: 88px !important;
+  min-width: 88px !important;
   flex-shrink: 0 !important;
-  text-transform: capitalize !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.09em !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -269,11 +277,11 @@
   background-image: var(--frost-noise-pattern) !important;
   background-size: 100px 100px !important;
   background-blend-mode: overlay !important;
-  border: 1px solid transparent !important;
-  border-radius: var(--frost-radius-xs) !important;
-  color: var(--frost-accent) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 7px !important;
+  color: var(--frost-text) !important;
   font-family: 'DM Mono', 'SF Mono', monospace !important;
-  font-size: 11px !important;
+  font-size: 10px !important;
   padding: 5px 8px !important;
   width: 100% !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
@@ -302,12 +310,12 @@
   flex: 1 1 100% !important; 
   min-width: 0 !important;
   overflow: visible !important;
-  margin-right: 6px !important;
+  margin-right: 8px !important;
 }
 
 /* Slider container */
 .frost-tweakpane .tp-sldv {
-  height: 4px !important;
+  height: 7px !important;
   position: relative !important;
   overflow: visible !important;
 }
@@ -315,8 +323,8 @@
 /* Track background */
 .frost-tweakpane .tp-sldv_t {
   background: rgba(255,255,255,0.08) !important;
-  border-radius: 4px !important;
-  height: 4px !important;
+  border-radius: 99px !important;
+  height: 7px !important;
   overflow: visible !important;
   position: relative !important;
   border: none !important;
@@ -333,7 +341,7 @@
     var(--frost-slider-mid, #5ee8b7) 50%,
     var(--frost-slider-end, #a8ffac) 100%
   ) !important;
-  border-radius: 4px !important;
+  border-radius: 99px !important;
   height: 100% !important;
   position: relative !important;
   overflow: visible !important;
@@ -349,12 +357,12 @@
   content: '' !important;
   display: block !important;
   position: absolute !important;
-  right: -7px !important;
+  right: -6px !important;
   top: 50% !important;
-  margin-top: -7px !important;
+  margin-top: -6px !important;
   transform: none !important;
-  width: 14px !important;
-  height: 14px !important;
+  width: 12px !important;
+  height: 12px !important;
   box-sizing: border-box !important;
   background: #fff !important;
   border: 2px solid var(--frost-accent, #6ec9b8) !important;
@@ -752,4 +760,181 @@
 /* FIX: Overflow for popup elements */
 .frost-tweakpane .tp-popv {
   z-index: 1000 !important;
+}
+
+/* FINAL DOCK INTEGRATION OVERRIDES
+   These target the live Tweakpane v4 class structure used by the bundled Frost pane. */
+.frost-tweakpane,
+.frost-tweakpane * {
+  box-sizing: border-box !important;
+}
+
+.frost-tweakpane {
+  --tp-base-background-color: transparent;
+  --tp-base-shadow-color: transparent;
+  --tp-button-background-color: rgba(255, 255, 255, 0.055);
+  --tp-button-background-color-active: rgba(45, 212, 191, 0.18);
+  --tp-button-background-color-focus: rgba(255, 255, 255, 0.08);
+  --tp-button-background-color-hover: rgba(255, 255, 255, 0.09);
+  --tp-button-foreground-color: rgba(255, 255, 255, 0.9);
+  --tp-container-background-color: rgba(255, 255, 255, 0.045);
+  --tp-container-background-color-active: rgba(255, 255, 255, 0.065);
+  --tp-container-background-color-focus: rgba(255, 255, 255, 0.07);
+  --tp-container-background-color-hover: rgba(255, 255, 255, 0.06);
+  --tp-container-foreground-color: rgba(255, 255, 255, 0.86);
+  --tp-groove-foreground-color: rgba(255, 255, 255, 0.11);
+  --tp-input-background-color: rgba(2, 6, 10, 0.62);
+  --tp-input-background-color-active: rgba(2, 6, 10, 0.7);
+  --tp-input-background-color-focus: rgba(2, 6, 10, 0.74);
+  --tp-input-background-color-hover: rgba(2, 6, 10, 0.68);
+  --tp-input-foreground-color: rgba(255, 255, 255, 0.9);
+  --tp-label-foreground-color: rgba(255, 255, 255, 0.56);
+  --tp-monitor-background-color: rgba(2, 6, 10, 0.58);
+  --tp-monitor-foreground-color: var(--frost-accent);
+}
+
+.frost-tweakpane .tp-fldv_b {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 34px !important;
+  padding: 9px 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background:
+    linear-gradient(90deg, rgba(45, 212, 191, 0.08), rgba(255, 255, 255, 0.025) 46%, rgba(255, 255, 255, 0.012)) !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'DM Sans', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.16em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  text-align: left !important;
+  text-shadow: 0 0 14px rgba(45, 212, 191, 0.1) !important;
+}
+
+.frost-tweakpane .tp-fldv_b:hover {
+  background:
+    linear-gradient(90deg, rgba(45, 212, 191, 0.12), rgba(255, 255, 255, 0.04) 48%, rgba(255, 255, 255, 0.018)) !important;
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.frost-tweakpane .tp-fldv_t {
+  min-height: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+}
+
+.frost-tweakpane .tp-fldv_c {
+  display: grid !important;
+  gap: 7px !important;
+  padding: 8px !important;
+}
+
+.frost-tweakpane .tp-lblv {
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 7px 8px 7px 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.055) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.043), rgba(255, 255, 255, 0.018)),
+    rgba(0, 0, 0, 0.2) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+.frost-tweakpane .tp-lblv:hover {
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+.frost-tweakpane .tp-lblv_l {
+  width: 120px !important;
+  min-width: 120px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.11em !important;
+}
+
+.frost-tweakpane .tp-colv,
+.frost-tweakpane .tp-sldtxtv,
+.frost-tweakpane .tp-txtv,
+.frost-tweakpane .tp-lstv,
+.frost-tweakpane .tp-ckbv_w {
+  min-height: 24px !important;
+}
+
+.frost-tweakpane .tp-colswv_b,
+.frost-tweakpane .tp-colswtxtv_b {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 0 0 3px rgba(0, 0, 0, 0.18) !important;
+}
+
+.frost-tweakpane .tp-txtv_i,
+.frost-tweakpane .tp-lstv_s,
+.frost-tweakpane .tp-coltxtv_ms {
+  height: 24px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    rgba(0, 0, 0, 0.36) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+}
+
+.frost-tweakpane .tp-sldtxtv_t {
+  width: 50px !important;
+  min-width: 50px !important;
+  max-width: 50px !important;
+}
+
+.frost-tweakpane .tp-sldtxtv_t .tp-txtv_i {
+  padding: 0 7px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: rgba(0, 0, 0, 0.28) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
+  text-align: right !important;
+}
+
+.frost-tweakpane .tp-sldv_t {
+  height: 8px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    rgba(0, 0, 0, 0.34) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45) !important;
+}
+
+.frost-tweakpane .tp-sldv_k {
+  box-shadow: 0 0 18px rgba(45, 212, 191, 0.16) !important;
+}
+
+.frost-tweakpane .tp-sldv_k::after {
+  width: 14px !important;
+  height: 14px !important;
+  right: -7px !important;
+  margin-top: -7px !important;
+  border-radius: 999px !important;
+  background: var(--frost-accent) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    0 0 0 3px rgba(45, 212, 191, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.48) !important;
+}
+
+.frost-tweakpane .tp-colpv {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  background:
+    linear-gradient(180deg, rgba(26, 32, 38, 0.96), rgba(10, 13, 18, 0.96)) !important;
 }

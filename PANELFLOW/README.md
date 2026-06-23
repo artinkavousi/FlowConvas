@@ -1,7 +1,8 @@
 # @artinos/panelflow
 
 A self-contained, reusable, production-grade **panel system** for building interactive
-visual tools and editor workspaces. Part of the **ARTINOS** creative studio ecosystem.
+visual tools and editor workspaces. PANELFLOW is host-brandable and can be installed
+into any React project as an independent UI/UX and control-surface package.
 
 PANELFLOW provides everything you need to mount a premium, dockable editor workspace into
 any React app: a panel runtime, an editor dock (bottom/left/right/float), a node graph
@@ -155,4 +156,4 @@ npm run lint       # type-check (tsc --noEmit)
 
 ## License
 
-Part of the ARTINOS ecosystem. See repository for license details.
+See repository for license details.

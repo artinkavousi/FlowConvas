@@ -5,6 +5,18 @@
 >
 > ---
 >
+> ## Required Project Memory
+>
+> Before every non-trivial task, read `MEMORY.md` alongside this file.
+>
+> `AGENTS.md` defines the universal operating rules. `MEMORY.md` defines the current
+> ARTINOS/PANELFLOW package boundaries, accepted decisions, verification gates, and
+> project-specific failure patterns. If they appear to conflict, preserve this file's
+> prime directive and use `MEMORY.md` as repo-specific context; update `MEMORY.md`
+> when durable project facts change.
+>
+> ---
+>
 > ## 0. Prime Directive
 >
 > Preserve the project's soul while upgrading the system.

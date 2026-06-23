@@ -1,5 +1,7 @@
 import type { ArtinosModule } from '../../registry/types';
-import WebGPUFluidPreview from './WebGPUFluidPreview';
+import { lazy } from 'react';
+
+const WebGPUFluidPreview = lazy(() => import('./WebGPUFluidPreview'));
 
 const webgpuFluidModule: ArtinosModule = {
   id: 'webgpu-fluid',
