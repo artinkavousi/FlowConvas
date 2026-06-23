@@ -10,10 +10,14 @@ import { Layers, Command } from 'lucide-react';
 import { useStudioStore } from '../studio-store';
 import { getModule } from '../registry/registry';
 import { PreviewStage } from './PreviewStage';
+import { useStudioPerformanceMonitor } from './use-performance-monitor';
 
 export function StudioViewport() {
   const activeModuleId = useStudioStore((s) => s.activeModuleId);
   const module = activeModuleId ? getModule(activeModuleId) : undefined;
+
+  // Generic perf monitor + pipeline/mode indicator for whatever module is loaded.
+  useStudioPerformanceMonitor(module);
 
   if (!module) {
     return (
