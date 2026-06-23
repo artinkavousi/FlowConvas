@@ -92,6 +92,20 @@ defaults *outside* the selector. Never `... || {}` inside the selector.
 
 Scaffold the boilerplate with: `npm run new-module -w STUDIO -- <id> --category <cat>`.
 
+**Canonical categories** (`category` is a free string; use these values so the gallery filters
+and the library stays multi-domain — plan-completion D-F):
+
+| Category | Use for |
+|---|---|
+| `ui` | React/UI/visual components and animated blocks |
+| `3d` | Three.js / R3F scenes and scene capsules |
+| `shader` | TSL / WebGPU / GLSL shader effects (set `dependencies: ['webgpu', …]` when WebGPU-only) |
+| `particles` | Particle fields and GPU particle systems |
+| `postfx` | Post-processing effects (bloom, chromatic aberration, grain, …) |
+| `material` | Reusable materials / PBR setups |
+
+Add a new category only when none of these fit; keep the set small.
+
 ## 6. Validation (Definition of Done)
 
 A converted module is done only when:
