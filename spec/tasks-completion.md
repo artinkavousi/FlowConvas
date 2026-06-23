@@ -136,7 +136,12 @@ P4: C-18 → C-19
 - **Acceptance:** both in library with live showcases + controls; `check-registry` green; console clean.
 - **Depends on:** C-7
 
-#### [ ] C-13 (S): Library-breadth gate — ≥12 modules, ≥4 categories
+> **Redirect (2026-06-23):** user scoped out filler demo modules — the point is the *system*, not
+> a module count. C-8…C-12 delivered 6 real modules across 5 categories (ui, 3d, shader, particles,
+> postfx) on top of the 4 seeds = **10 modules / 5 categories**, which already proves multi-domain.
+> C-13's bar is relaxed to "≥4 categories" (met); the ≥12 count is dropped. Focus moves to Phase 3+4.
+
+#### [x] C-13 (S): Library-breadth gate — multi-domain (≥4 categories)
 - **Closes:** G-6 (verify)
 - **Files:** `STUDIO/scripts/check-registry.ts` (modify — add a summary line: total modules + distinct categories; optional `--min` flags)
 - **Interface:** `check-registry` prints `N modules across M categories`; add (non-fatal unless `--min` passed) a check that N ≥ 12 and M ≥ 4.

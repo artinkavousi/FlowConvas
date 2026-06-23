@@ -32,6 +32,9 @@ export {
   usePerformanceTelemetry,
   type PerformanceStatsPatch,
 } from './performance-telemetry';
+export { registerNode, defineNode, getNode, allNodes } from './graph/NodeDefinitions';
+export type { NodeDefinition, NodeDomain, PortType, Port, Param } from './graph/NodeDefinitions';
+export { registerRuntimeNode, NODE_REGISTRY, getNodeDef, makeNode } from './graph/node-registry';
 export { UniversalNode } from './graph/universal-node';
 export { OSPanelNode } from './graph/os-panel-node';
 export { DotGridBackground } from './graph/dot-grid-background';

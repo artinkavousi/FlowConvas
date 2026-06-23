@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { NodeDefinition, NodeDomain, Param, PortType } from '@/graph/NodeDefinitions';
-import { allNodes } from '@/graph/NodeDefinitions';
+import { allNodes, getNode, registerNode } from '@/graph/NodeDefinitions';
 import '@/nodes/tsl-material';
 import type { FluidityNode, FluidityNodeData } from '@/graph/graph-store';
 
@@ -142,6 +142,19 @@ export const NODE_REGISTRY: Record<string, NodeDef> = {
 
 export function getNodeDef(id: string): NodeDef | undefined {
   return NODE_REGISTRY[id];
+}
+
+/**
+ * Register a runtime NodeDefinition AND surface it in NODE_REGISTRY so the graph
+ * UI (spotlight search, makeNode) can use it. Idempotent — safe under HMR and
+ * repeated calls. Used by hosts (e.g. ARTINOS) to expose their modules as nodes.
+ */
+export function registerRuntimeNode(def: NodeDefinition): NodeDef {
+  const entry = fromRuntime(def);
+  if (NODE_REGISTRY[entry.id]) return NODE_REGISTRY[entry.id];
+  if (!getNode(def.type)) registerNode(def);
+  NODE_REGISTRY[entry.id] = entry;
+  return entry;
 }
 
 let spawnCounter = 0;

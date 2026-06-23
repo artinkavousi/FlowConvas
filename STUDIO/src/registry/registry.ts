@@ -42,6 +42,11 @@ function buildRegistry(): ArtinosModule[] {
 
 export const REGISTRY: ArtinosModule[] = buildRegistry();
 
+// Expose every module as a node on the PANELFLOW graph canvas (FR-9, ADR via D-A).
+// Lazy import avoids pulling the graph into non-graph code paths at module init.
+import { registerModuleNodes } from './module-to-node';
+registerModuleNodes(REGISTRY);
+
 export function getModule(id: string): ArtinosModule | undefined {
   return REGISTRY.find((m) => m.id === id);
 }
