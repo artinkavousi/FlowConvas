@@ -69,6 +69,19 @@ function EmptyInspector() {
   );
 }
 
+function ValidationBadge({ validation }: { validation?: { build: boolean; preview: boolean; console: boolean } }) {
+  const pass = validation && validation.build && validation.preview && validation.console;
+  const label = !validation ? 'unvalidated' : pass ? 'validated' : 'check failed';
+  const cls = !validation
+    ? 'text-white/35 bg-white/[0.04]'
+    : pass
+      ? 'text-teal-300/90 bg-teal-400/10'
+      : 'text-red-400 bg-red-500/10';
+  return (
+    <span className={`rounded px-1.5 py-0.5 font-bold uppercase tracking-[0.1em] ${cls}`}>{label}</span>
+  );
+}
+
 function ReferenceSection({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <section>
@@ -124,6 +137,7 @@ function InspectorView() {
           <div className="flex items-center gap-2 text-[9px]">
             <span className="font-black uppercase tracking-[0.16em] text-teal-200/80">{module.category}</span>
             <span className="font-mono text-white/30">{module.id}</span>
+            <ValidationBadge validation={module.validation} />
             <span className="ml-auto font-mono text-white/30">{module.schema.parameters.length} controls · {groupCount} groups</span>
           </div>
 
