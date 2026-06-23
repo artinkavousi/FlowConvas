@@ -23,10 +23,12 @@ import { useStudioStore } from './studio-store';
 import { getModule } from './registry/registry';
 import { LibraryPanel } from './panels/library.panel';
 import { ArtinosInspectorPanel } from './panels/inspector.panel';
+import { ConsolePanel } from './panels/console.panel';
 
 // Register the Studio's own dock panels into the PANELFLOW registry once.
 registerPanel(ArtinosInspectorPanel);
 registerPanel(LibraryPanel);
+registerPanel(ConsolePanel);
 
 /**
  * Loads the active module: registers its control schema, seeds bridge defaults,
@@ -71,6 +73,7 @@ function StudioInner() {
     panelOS.openPanel('scene-settings');
     panelOS.openPanel('inspector');
     panelOS.openPanel('library');
+    panelOS.openPanel('console');
   }, []);
 
   return (
