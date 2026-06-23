@@ -24,11 +24,13 @@ import { getModule } from './registry/registry';
 import { LibraryPanel } from './panels/library.panel';
 import { ArtinosInspectorPanel } from './panels/inspector.panel';
 import { ConsolePanel } from './panels/console.panel';
+import { AgentPanel } from './panels/agent.panel';
 
 // Register the Studio's own dock panels into the PANELFLOW registry once.
 registerPanel(ArtinosInspectorPanel);
 registerPanel(LibraryPanel);
 registerPanel(ConsolePanel);
+registerPanel(AgentPanel);
 
 /**
  * Loads the active module: registers its control schema, seeds bridge defaults,
