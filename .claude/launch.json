@@ -9,6 +9,13 @@
       "autoPort": true
     },
     {
+      "name": "website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Website", "run", "dev"],
+      "port": 3002,
+      "autoPort": true
+    },
+    {
       "name": "dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "PANELFLOW", "run", "dev"],
