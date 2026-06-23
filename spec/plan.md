@@ -3,6 +3,18 @@
 > Status: draft · Based on: spec/prd.md, ARTINOS-PRD.md (master vision), PANELFLOW (built dependency) · Updated: 2026-06-22
 > Readiness: PASS (see §8)
 
+> **⚠ v0.3 reconciliation (2026-06-23).** This document describes the MVP plan as written; the
+> implemented Studio has since pivoted. Read it as historical record alongside the current truth:
+> - The "**showcase pages**" / Gallery+Showcase model below was **superseded** by a live-viewport +
+>   multi-panel dock (ADR-14→17 in `spec/decisions.md`). `STUDIO/src/shell/Gallery.tsx` and
+>   `Showcase.tsx` **no longer exist**; their roles moved to `StudioViewport.tsx` + `PreviewStage.tsx`
+>   and the dock panels `panels/library.panel.tsx` + `panels/inspector.panel.tsx`. Controls are
+>   tweakpane_frost auto-panels in the dock, not inline page sections.
+> - The WebGPU fluid conversion was **re-expanded to full source fidelity** (audio, emitters, presets,
+>   quality scaler — see ADR-18), not the stripped MVP version.
+> - All gap-closure work from here on is tracked in **`spec/plan-completion.md`** +
+>   **`spec/tasks-completion.md`**, not in this file.
+
 ## 1. Approach
 
 PANELFLOW already provides the panel OS, editor dock, auto-generated control panels, graph canvas, command palette, and glass design system. ARTINOS does **not** rebuild any of that — it builds a thin **Studio app** in `STUDIO/` that *consumes* PANELFLOW and adds the three things PANELFLOW doesn't have: a **file-based reusable-block registry**, **showcase pages** per module, and a **documented converter workflow** that turns inputs into registered modules.

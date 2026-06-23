@@ -1,5 +1,14 @@
 # Tasks — ARTINOS (Studio MVP)
 
+> **⚠ v0.3 reconciliation (2026-06-23) — historical record.** All 16 MVP tasks below were completed,
+> but the architecture has since moved on; this list no longer mirrors the code 1:1:
+> - **T-7/T-8/T-9** built `STUDIO/src/shell/Gallery.tsx` + `Showcase.tsx`. Those files were **deleted**
+>   in the v0.3 panel pivot (ADR-14→17). Their behavior now lives in `shell/StudioViewport.tsx`,
+>   `shell/PreviewStage.tsx`, and the dock panels `panels/library.panel.tsx` + `panels/inspector.panel.tsx`.
+> - **T-14** stripped the fluid's audio/emitters/presets. v0.3 **restored them to full fidelity**
+>   (`sim/audio`, `sim/emitters`, `sim/presets`, `sim/performance`, `sim/params.ts`) — see ADR-18.
+> - Ongoing completion work is tracked in **`spec/tasks-completion.md`** (tasks C-1…C-19), not here.
+>
 > Based on: spec/plan.md · Execute with /dev-spec-build · Tick boxes as completed.
 > `[ ]` todo · `[x]` done · Size: S/M/L (no L) · "Parallel-safe" = disjoint files, no shared dep.
 > All paths are relative to the repo root `G:\CODE2026\.PROJECTS\ARTINOS`.
