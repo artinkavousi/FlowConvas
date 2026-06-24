@@ -1,10 +1,14 @@
 # ARTINOS Module Converter — Workflow
 
-> The documented, agent-followed procedure for turning any accepted input into a
+> The documented, agent-followed **procedure** for turning any accepted input into a
 > registered, showcased ARTINOS module. This is the converter (ARTINOS-PRD §10) —
 > a workflow + scaffold script, **not** a bespoke runtime (decisions ADR-7).
-> Pair this with `STUDIO/AGENTS.md` (reuse-first + sync rules) and the root `AGENTS.md`
-> (preserve identity, port directly, verify with proof).
+> This is the operational layer of — and **adopts** — the master guideline
+> `ARTINPRD MODULE CONVERTER.md` (repo root, the single source of truth): read that for the
+> full conceptual model, the two conversion modes, provenance/promotion, and the final
+> conversion report format. **If this procedure and the guideline ever differ, the guideline
+> wins — update this file to match.** Pair this with `STUDIO/AGENTS.md` (reuse-first + sync
+> rules) and the root `AGENTS.md` (preserve identity, port directly, verify with proof).
 
 ---
 
@@ -67,6 +71,13 @@ registry (`import.meta.glob`). Map each §18 deliverable to a file/field:
 
 ## 4. Decomposition model (ARTINOS-PRD §9, AGENTS.md §3)
 
+Pick the mode from what the input contains (master guideline §3):
+- **Mode A** — one reusable core → **one** module. The default; most conversions are Mode A.
+- **Mode B** — a full project / several reusable systems → **one module per system** + an optional
+  composition module that rebuilds the original faithfully. There is no `labs/` tree; each module's
+  self-contained engine is its capsule, and shared cores share via package promotion
+  (`spec/promotion-workflow.md`), not snapshot copies.
+
 Classify the work; prefer one strong compact file over many weak ones:
 - **Reusable Component** — small self-contained UI/visual → a `*.tsx` in the module folder.
 - **Reusable Module** — behavior + state + visuals + controls bundled → the module folder.
@@ -119,3 +130,6 @@ A converted module is done only when:
   deviations are reported.
 - The library stays in sync (`STUDIO/AGENTS.md` §sync) — entry + showcase reflect the
   current source.
+
+Close the conversion with the **report format** (PASS / BLOCKED / NEEDS HUMAN DECISION,
+created/registered/preserved/deviations/validation/next) — master guideline §18.

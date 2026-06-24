@@ -16,6 +16,7 @@ import { fileURLToPath } from 'url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '../..');
 const modulesDir = resolve(here, '../src/modules');
+const labsDir = resolve(here, '../src/labs');
 
 const REQUIRED = [
   'id', 'name', 'category', 'description', 'tags', 'schema', 'preview',
@@ -25,13 +26,15 @@ const REQUIRED = [
 const NO_TODO = ['description', 'usage', 'agentNotes'];
 
 function findModuleFiles(): string[] {
-  if (!existsSync(modulesDir)) return [];
   const out: string[] = [];
-  for (const entry of readdirSync(modulesDir)) {
-    const dir = resolve(modulesDir, entry);
-    if (!statSync(dir).isDirectory()) continue;
-    for (const f of readdirSync(dir)) {
-      if (/\.module\.(ts|tsx)$/.test(f)) out.push(resolve(dir, f));
+  for (const base of [modulesDir, labsDir]) {
+    if (!existsSync(base)) continue;
+    for (const entry of readdirSync(base)) {
+      const dir = resolve(base, entry);
+      if (!statSync(dir).isDirectory()) continue;
+      for (const f of readdirSync(dir)) {
+        if (/\.module\.(ts|tsx)$/.test(f)) out.push(resolve(dir, f));
+      }
     }
   }
   return out;

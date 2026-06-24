@@ -215,6 +215,10 @@ ARTINOS includes a ability for ai Agent like an Skill to converter that turns an
 11. Add agent-readable instructions.
 12. Validate the module inside ARTINOS (build, preview, console, behavior).
 
+> Full guideline (conceptual model, conversion modes, provenance, report format):
+> `ARTINPRD MODULE CONVERTER.md` (repo root). Operational procedure: `spec/converter-workflow.md`.
+> Executed by the `artinos-module` skill (`.claude/skills/artinos-module/`).
+
 ---
 
 ## 11. Registry Schema

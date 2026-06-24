@@ -25,8 +25,11 @@ existing module (edit it directly) or for whole-app features.
 1. **Reuse first — don't duplicate.** Search before building: Agent panel · MCP
    `search_modules`/`get_module` (`npm run mcp -w STUDIO`) · graph spotlight (`module/<id>` nodes).
    If a module already covers it, **extend it and stop**. (ARTINOS-PRD §15; `STUDIO/AGENTS.md`.)
-2. **Decompose, don't over-split** (ARTINOS-PRD §9, AGENTS.md §3). Find the *one* reusable core;
-   strip unrelated scaffolding. One strong file beats many weak ones.
+2. **Decompose, don't over-split** (ARTINOS-PRD §9, AGENTS.md §3). Find the reusable core(s);
+   strip unrelated scaffolding. One strong file beats many weak ones. **Mode A** (the common case):
+   one core → one module. **Mode B** (a full project with several reusable systems): one module per
+   system + an optional composition module that rebuilds the original faithfully — no `labs/` tree
+   (the module's self-contained engine *is* the capsule). See the master guideline §3/§6.
 3. **Scaffold:** `npm run new-module -w STUDIO -- <id> --category <cat>`. Use a canonical category:
    `ui · 3d · shader · particles · postfx · material`. Pick `<id>` kebab-case; `id === schema.id`.
 4. **Port the source DIRECTLY — preserve identity** (root `AGENTS.md` §4, FR-15). Copy the real
@@ -36,15 +39,21 @@ existing module (edit it directly) or for whole-app features.
      canvas ref + `ResizeObserver` + `dispose()`. See `examples.md`. Never add `@types/three`.
 5. **Fill the `ArtinosModule` entry** completely: `description`, `tags`, real `usage` snippet,
    `dependencies` (add `'webgpu'` for WebGPU-only so the degrade notice fires), `presets`, `related`,
-   and `agentNotes` written so another agent can use it **without opening the source**.
+   and `agentNotes` written so another agent can use it **without opening the source**. Record
+   **provenance** (where it was ported from + what was dropped/changed) in `agentNotes`/`reuseNotes`
+   — that is the library's lineage record (master guideline §14).
 6. **Wire the preview to the bridge** (ADR-13): `useBridgeStore((s) => s.componentValues['<id>'])` —
    default *outside* the selector, never `... || {}` inside it (it loops on getSnapshot).
 7. **Gate it (DoD).** `npm run check-registry -w STUDIO` green + `npm run lint -w STUDIO` + live
    preview with a control driving it, **zero console errors**. For conversions, report a side-by-side
-   fidelity note vs the source. "It builds" is not done.
+   fidelity note vs the source, and close with the **conversion report format** (PASS / BLOCKED /
+   NEEDS HUMAN DECISION — master guideline §18). "It builds" is not done.
 
+> **Source of truth — `ARTINPRD MODULE CONVERTER.md`** (repo root): the master guideline this skill
+> adopts (full model, conversion modes, provenance/promotion, report format). If anything here and the
+> guideline differ, the guideline wins.
 > Detailed contract, the engine.js pattern, and good/bad examples: **`examples.md`** (this folder).
-> Full procedure & deliverables map: `spec/converter-workflow.md`. ADRs: `spec/decisions.md`.
+> Operational procedure & deliverables map: `spec/converter-workflow.md`. ADRs: `spec/decisions.md`.
 
 ## Examples (show, don't tell)
 

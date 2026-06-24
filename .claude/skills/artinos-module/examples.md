@@ -1,7 +1,9 @@
 # artinos-module — contract & patterns
 
 Reference for `/artinos-module`. Copy these shapes; mirror an existing module in
-`STUDIO/src/modules/` rather than inventing structure.
+`STUDIO/src/modules/` rather than inventing structure. The full conceptual model, the two
+conversion modes, and the final report format live in the master guideline
+`ARTINPRD MODULE CONVERTER.md` (repo root); the operational procedure is `spec/converter-workflow.md`.
 
 ## Module folder contract
 
@@ -82,9 +84,12 @@ WebGPU/TSL: import from `three/webgpu` (`WebGPURenderer`, `MeshBasicNodeMaterial
 ## The entry (`<id>.module.ts`) — fill everything
 
 Match a seed (`gpu-particles`, `crystal-knot`, `gooey-slider`). Required, non-stub:
-`id`(===`schema.id`), `name`, `category` (canonical set), `description`, `tags`, `schema.parameters`
-(each `key/label/type/default`, `min/max/step` for numbers), `preview`, `sourcePath` (must resolve),
-`dependencies`, real `usage`, `presets`, `related`, `agentNotes`, `version`, `updatedAt`.
+`id`(===`schema.id`), `name`, `category` (canonical set: `ui·3d·shader·particles·postfx·material`),
+`description`, `tags`, `schema.parameters` (each `key/label/type/default`, `min/max/step` for
+numbers), `preview`, `sourcePath` (must resolve), `dependencies`, real `usage`, `presets`, `related`,
+`agentNotes`, `version`, `updatedAt`. For a conversion, record **provenance** in
+`agentNotes`/`reuseNotes` — where it was ported from + what was dropped/changed (mirror the
+`webgpu-fluid` entry).
 
 ## Verify (DoD)
 

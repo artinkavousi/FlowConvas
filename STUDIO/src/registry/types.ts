@@ -15,7 +15,7 @@ export interface ArtinosModule {
   id: string;
   /** Display name. */
   name: string;
-  /** Classification: 'ui' | '3d' | 'shader' | 'effect' | 'layout' | 'material' | ... */
+  /** Classification — canonical set: 'ui' | '3d' | 'shader' | 'particles' | 'postfx' | 'material'. */
   category: string;
   /** What it does and when to use it. */
   description: string;

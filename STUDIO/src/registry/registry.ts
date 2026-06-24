@@ -9,10 +9,13 @@
 import type { ArtinosModule } from './types';
 
 // Eagerly import every module entry. Each file default-exports an ArtinosModule.
-const modules = import.meta.glob<{ default: ArtinosModule }>(
-  '../modules/*/*.module.{ts,tsx}',
-  { eager: true },
-);
+// Reusable component modules live under `modules/<id>/`; faithful Lab replicas
+// (compositions built from those modules) live under `labs/<id>/`. Both register
+// the same way so the gallery/graph/MCP surface them uniformly.
+const modules = {
+  ...import.meta.glob<{ default: ArtinosModule }>('../modules/*/*.module.{ts,tsx}', { eager: true }),
+  ...import.meta.glob<{ default: ArtinosModule }>('../labs/*/*.module.{ts,tsx}', { eager: true }),
+};
 
 function buildRegistry(): ArtinosModule[] {
   const seen = new Set<string>();

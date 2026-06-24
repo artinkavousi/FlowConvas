@@ -3,8 +3,10 @@
 > Rules for any agent building, converting, or maintaining modules in the ARTINOS Studio.
 > Read with the root `AGENTS.md` (preserve identity, port directly, verify with proof),
 > root `MEMORY.md` (current package boundaries and accepted project memory), and
-> `spec/converter-workflow.md` (how to convert an input into a module). ARTINOS is single-user,
-> local-first; the registry is file-based; PANELFLOW is a built dependency — don't rebuild it.
+> `spec/converter-workflow.md` (how to convert an input into a module) and its master guideline
+> `ARTINPRD MODULE CONVERTER.md` at the repo root (full model, conversion modes, report format).
+> ARTINOS is single-user, local-first; the registry is file-based; PANELFLOW is a built dependency —
+> don't rebuild it.
 
 ## 1. Reuse first (run before building anything — ARTINOS-PRD §15)
 
