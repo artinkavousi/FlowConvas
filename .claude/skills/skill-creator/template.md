@@ -44,10 +44,10 @@ allowed_tools:
 
 **Module folder contract**
 ```
-STUDIO/src/modules/<id>/
-  <PascalId>Preview.tsx   # default export; useBridgeStore raw slice, default OUTSIDE the selector (ADR-13)
-  <id>.module.ts          # default export: ArtinosModule, id === schema.id
-  engine.js               # (3D/shader only) untyped Three.js core; typed .tsx wraps it
+STUDIO/src/modules/<category>/
+  <Feature>.module.tsx    # self-contained runtime/component source
+  <Feature>.showcase.tsx  # useBridgeStore raw slice, default OUTSIDE the selector (ADR-13)
+  <Feature>.meta.ts       # default export: ArtinosModule, id === schema.id
 ```
 
 **Definition of Done line**

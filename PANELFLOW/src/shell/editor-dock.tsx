@@ -398,7 +398,6 @@ function PanelHost() {
         <div ref={scrollAreaRef} className="h-full min-w-0 overflow-x-auto overflow-y-hidden custom-scrollbar">
           <div className="flex h-full min-w-full items-stretch gap-0">
             {visiblePanels.map((def, index) => {
-              const Icon = def.icon;
               const Component = def.component;
               const isActive = def.id === activePanelId;
               const closable = def.capabilities?.closable !== false;
@@ -437,28 +436,16 @@ function PanelHost() {
                         event.dataTransfer.setData('text/plain', def.id);
                       }}
                       onDragEnd={() => setDropIndex(null)}
-                      className={`flex min-h-[42px] items-center justify-between gap-3 border-b px-3 py-2 transition ${
+                      className={`flex min-h-[36px] items-center justify-between gap-2 border-b px-2.5 py-1.5 transition ${
                         isActive ? 'border-teal-300/16 bg-teal-300/[0.045]' : 'border-white/[0.055] bg-white/[0.018]'
                       }`}
                     >
                       <button
                         onClick={() => focusPanel(def.id)}
-                        className="flex min-w-0 items-center gap-2 text-left focus:outline-none"
+                        className="min-w-0 text-left focus:outline-none"
                       >
-                        {Icon && (
-                          <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-md border ${
-                            isActive ? 'border-teal-300/24 bg-teal-300/10 text-teal-300' : 'border-white/8 bg-black/22 text-white/38'
-                          }`}>
-                            <Icon size={13} />
-                          </span>
-                        )}
-                        <span className="min-w-0">
-                          <span className="block truncate text-[10px] font-black uppercase tracking-[0.18em] text-white/76">
-                            {def.title}
-                          </span>
-                          <span className="mt-0.5 hidden truncate text-[9px] text-white/28 xl:block">
-                            {def.description}
-                          </span>
+                        <span className={isActive ? 'block truncate text-[11px] font-black uppercase tracking-[0.14em] text-teal-100' : 'block truncate text-[11px] font-black uppercase tracking-[0.14em] text-white/58'}>
+                          {def.title}
                         </span>
                       </button>
 

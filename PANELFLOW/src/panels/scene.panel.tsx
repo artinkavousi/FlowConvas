@@ -23,22 +23,6 @@ import { allNodes } from '@/graph/NodeDefinitions';
 
 type Option<T extends string> = { value: T; label: string };
 
-function PanelKicker({ icon: Icon, title, detail }: { icon: any; title: string; detail: string }) {
-  return (
-    <div className="flex items-start justify-between gap-3 rounded-xl border border-white/8 bg-white/[0.035] p-3">
-      <div className="flex items-start gap-3 min-w-0">
-        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
-          <Icon size={15} />
-        </div>
-        <div className="min-w-0">
-          <div className="text-[11px] font-black uppercase tracking-[0.22em] text-white/80">{title}</div>
-          <div className="mt-1 text-[11px] leading-relaxed text-white/42">{detail}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-2.5">
@@ -183,12 +167,6 @@ function PipelineView() {
   return (
     <PanelShell>
       <div className="h-full w-full overflow-y-auto custom-scrollbar space-y-5">
-        <PanelKicker
-          icon={Workflow}
-          title="Scene Settings"
-          detail="Viewport, camera, rendering, performance monitors, and pipeline health for the active workspace."
-        />
-
         <Section title="Viewport">
           <Segmented
             value={scene.viewMode}
@@ -270,8 +248,8 @@ function PipelineView() {
 
 export const ScenePanel = definePanel({
   id: 'scene-settings',
-  title: 'Scene Settings',
-  description: 'Viewport, camera, render, performance, and pipeline settings.',
+  title: 'Scene',
+  description: 'Viewport and render settings.',
   icon: Workflow,
   defaultPlacement: 'right',
   defaultSize: 390,

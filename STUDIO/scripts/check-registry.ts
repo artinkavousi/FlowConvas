@@ -3,8 +3,10 @@
  *
  *   npm run check-registry -w STUDIO
  *
- * Validates every module entry statically (no runtime import — the entries pull in
- * PANELFLOW's browser-only graph). Checks: required fields present & non-empty,
+ * Validates every registry entry statically (no runtime import — the entries pull in
+ * PANELFLOW's browser-only graph). Preferred entries are `*.meta.ts`; legacy
+ * `<id>/<id>.module.ts` entries are still accepted. Runtime files in Lab capsule
+ * `modules/` folders are ignored. Checks: required fields present & non-empty,
  * id === schema.id, sourcePath resolves on disk, schema params have key/label/type/
  * default, and no duplicate ids. Prints a per-module table; exits non-zero on failure.
  */
@@ -25,17 +27,27 @@ const REQUIRED = [
 // String fields a scaffold leaves as a TODO stub — must be filled before "done".
 const NO_TODO = ['description', 'usage', 'agentNotes'];
 
+function walk(dir: string, out: string[] = []): string[] {
+  if (!existsSync(dir)) return out;
+  for (const entry of readdirSync(dir)) {
+    const path = resolve(dir, entry);
+    if (statSync(path).isDirectory()) walk(path, out);
+    else out.push(path);
+  }
+  return out;
+}
+
+function isRegistryFile(file: string): boolean {
+  const rel = file.slice(repoRoot.length + 1).replace(/\\/g, '/');
+  if (/\.meta\.(ts|tsx)$/.test(rel)) return true;
+  return /^STUDIO\/src\/(modules|labs)\/[^/]+\/[^/]+\.module\.(ts|tsx)$/.test(rel);
+}
+
 function findModuleFiles(): string[] {
   const out: string[] = [];
   for (const base of [modulesDir, labsDir]) {
     if (!existsSync(base)) continue;
-    for (const entry of readdirSync(base)) {
-      const dir = resolve(base, entry);
-      if (!statSync(dir).isDirectory()) continue;
-      for (const f of readdirSync(dir)) {
-        if (/\.module\.(ts|tsx)$/.test(f)) out.push(resolve(dir, f));
-      }
-    }
+    out.push(...walk(base).filter(isRegistryFile));
   }
   return out;
 }
@@ -90,7 +102,7 @@ for (const file of files) {
 
 // ── Report ───────────────────────────────────────────────────────────────────
 console.log('\nARTINOS registry check\n' + '─'.repeat(50));
-if (rows.length === 0) console.log('No modules found in STUDIO/src/modules.');
+if (rows.length === 0) console.log('No registry entries found in STUDIO/src/modules or STUDIO/src/labs.');
 for (const r of rows) {
   console.log(`${r.ok ? '✓' : '✗'}  ${r.id.padEnd(18)} ${r.name}`);
   for (const p of r.problems) console.log(`     · ${p}`);

@@ -13,10 +13,10 @@ keyboard debug targets are dropped.
 ## Capsule layout
 ```
 labs/fluid-sim/
-  fluid-sim.module.ts     # registry entry (id "fluid-sim", category 3d)
   FluidSimLab.tsx         # bridge-driven preview (canvas + mic toggle + dispose)
+  FluidSimLab.meta.ts     # registry entry (id "fluid-sim", category lab)
   createFluidSimLab.js    # composition factory — reproduces REF main.js init + loop
-  engine/                 # VERBATIM source snapshot (self-contained, copy-pasteable)
+  modules/                # VERBATIM reusable-module snapshot (self-contained, copy-pasteable)
     fluid/ particles/ emitters/ audio/ presets/ performance/ compat/
     config.js  input.js  assets/
   local/                  # project-specific (not canonical library) material
@@ -29,7 +29,7 @@ labs/fluid-sim/
 - `fluid-emitters` — the emitter system (`emitters/`)
 - `audio-reactive` — the audio-reactivity engine (`audio/`)
 
-The Lab keeps its **own** verbatim `engine/` snapshot so it stays portable/copy-pasteable
+The Lab keeps its **own** verbatim `modules/` snapshot so it stays portable/copy-pasteable
 (Lab Capsule Standard); the standalone modules carry their own copies of the same source by design.
 Promotion of shared cores into `packages/` (de-dupe) is the future path (master guideline §14).
 

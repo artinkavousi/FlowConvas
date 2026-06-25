@@ -6,8 +6,9 @@
  * Wraps the existing file-based registry + scripts; files stay canonical (ADR-2).
  * Tools: list_modules, search_modules, get_module, scaffold_module, check_registry.
  *
- * Module metadata is parsed from each <id>.module.ts source (never runtime-imported —
+ * Module metadata is parsed from registry metadata sources (never runtime-imported —
  * the entries pull in browser-only PANELFLOW, same constraint as check-registry.ts).
+ * Preferred entries are `*.meta.ts`; legacy `<id>/<id>.module.ts` entries remain supported.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -20,7 +21,9 @@ import { spawnSync } from 'child_process';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const studioRoot = resolve(here, '..');
+const repoRoot = resolve(studioRoot, '..');
 const modulesDir = resolve(studioRoot, 'src/modules');
+const labsDir = resolve(studioRoot, 'src/labs');
 
 interface ModuleMeta {
   id: string;
@@ -55,15 +58,30 @@ function presetKeys(src: string): string[] {
   return [...m[1].matchAll(/^\s*([A-Za-z0-9_]+|['"][^'"]+['"]):\s*\{/gm)].map((x) => x[1].replace(/['"]/g, ''));
 }
 
+function walk(dir: string, out: string[] = []): string[] {
+  if (!existsSync(dir)) return out;
+  for (const entry of readdirSync(dir)) {
+    const path = resolve(dir, entry);
+    if (statSync(path).isDirectory()) walk(path, out);
+    else out.push(path);
+  }
+  return out;
+}
+
+function isRegistryFile(file: string): boolean {
+  const rel = file.slice(repoRoot.length + 1).replace(/\\/g, '/');
+  if (/\.meta\.(ts|tsx)$/.test(rel)) return true;
+  return /^STUDIO\/src\/(modules|labs)\/[^/]+\/[^/]+\.module\.(ts|tsx)$/.test(rel);
+}
+
+function findRegistryFiles(): string[] {
+  return [...walk(modulesDir), ...walk(labsDir)].filter(isRegistryFile);
+}
+
 function loadModules(): ModuleMeta[] {
-  if (!existsSync(modulesDir)) return [];
   const out: ModuleMeta[] = [];
-  for (const entry of readdirSync(modulesDir)) {
-    const dir = resolve(modulesDir, entry);
-    if (!statSync(dir).isDirectory()) continue;
-    const file = readdirSync(dir).find((f) => /\.module\.(ts|tsx)$/.test(f));
-    if (!file) continue;
-    const src = readFileSync(resolve(dir, file), 'utf-8');
+  for (const file of findRegistryFiles()) {
+    const src = readFileSync(file, 'utf-8');
     const id = strField(src, 'id');
     if (!id) continue;
     out.push({

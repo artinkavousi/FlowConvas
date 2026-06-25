@@ -7,8 +7,8 @@ export interface IconRailProps {
   side?: 'left' | 'right';
 }
 
-const CORE_ORDER = ['scene-settings', 'inspector', 'library', 'graph'];
-const STUDIO_ORDER: string[] = [];
+const CORE_ORDER = ['inspector', 'lab-capsules', 'library', 'scene-settings', 'graph'];
+const STUDIO_ORDER = ['agent', 'console'];
 
 function sortByOrder(items: PanelDefinition[], order: string[]) {
   return [...items].sort((a, b) => {
@@ -47,28 +47,17 @@ export function IconRail({ onOpen, side = 'right' }: IconRailProps) {
 
   return (
     <div
-      className={`shrink-0 w-[58px] sm:w-[64px] flex flex-col py-2 overflow-y-auto no-scrollbar ${borderSide} z-20`}
+      className={`shrink-0 w-[50px] sm:w-[54px] flex flex-col py-2 overflow-y-auto no-scrollbar ${borderSide} z-20`}
       style={{
         background: 'linear-gradient(180deg, rgba(255,255,255,0.018), rgba(0,0,0,0.06))',
         borderColor: 'rgba(255,255,255,0.055)',
       }}
     >
       {groups.map((group, groupIndex) => (
-        <div key={group.label} className={groupIndex === 0 ? '' : 'mt-2 border-t border-white/[0.055] pt-2'}>
-          <div
-            className="mb-1 text-center text-[7px] font-black uppercase tracking-[0.24em] text-white/22"
-            style={{
-              writingMode: 'vertical-rl',
-              transform: side === 'left' ? 'rotate(180deg)' : 'none',
-              marginInline: 'auto',
-            }}
-          >
-            {group.label}
-          </div>
+        <div key={group.label} className={groupIndex === 0 ? '' : 'mt-1.5 border-t border-white/[0.055] pt-1.5'}>
           {group.items.map((def) => {
             const id = def.id;
             const liveDef = getPanelDefinition(id) ?? def;
-            const Icon = liveDef.icon;
             const isSelected = activePanelId === id;
             const isOpen = openPanelIds.includes(id);
 
@@ -84,7 +73,7 @@ export function IconRail({ onOpen, side = 'right' }: IconRailProps) {
                 }}
                 title={liveDef.description || liveDef.title}
                 aria-label={liveDef.title}
-                className={`relative flex min-h-[90px] w-full flex-col items-center justify-center py-3 transition-all group ${
+                className={`relative flex min-h-[78px] w-full flex-col items-center justify-center py-2.5 transition-all group ${
                   isSelected
                     ? 'text-white'
                     : isOpen
@@ -93,25 +82,24 @@ export function IconRail({ onOpen, side = 'right' }: IconRailProps) {
                 }`}
               >
                 {isSelected && (
-                  <div className={`absolute ${side === 'right' ? 'right-0' : 'left-0'} top-2 bottom-2 w-[2px] bg-teal-300 shadow-[0_0_16px_rgba(45,212,191,0.85)] rounded-full`} />
+                  <div className={`absolute ${side === 'right' ? 'right-0' : 'left-0'} inset-y-0 w-[2px] bg-teal-300`} />
                 )}
 
                 {isSelected && (
                   <div
-                    className="absolute inset-x-1 inset-y-1 rounded-lg opacity-100"
+                    className="absolute inset-0 opacity-100"
                     style={{
                       background: side === 'right'
-                        ? 'linear-gradient(to right, transparent, rgba(45,212,191,0.095))'
-                        : 'linear-gradient(to left, transparent, rgba(45,212,191,0.095))',
+                        ? 'linear-gradient(to right, transparent, rgba(45,212,191,0.11))'
+                        : 'linear-gradient(to left, transparent, rgba(45,212,191,0.11))',
+                      boxShadow: 'inset 0 0 18px rgba(45, 212, 191, 0.1), 0 0 16px rgba(45, 212, 191, 0.08)',
                     }}
                   />
                 )}
 
-                <div className={`relative z-10 flex flex-col items-center gap-2.5 ${isSelected ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
-                  <Icon size={15} className={`transition-transform duration-300 ${isSelected ? 'scale-110 drop-shadow-[0_0_8px_rgba(45,212,191,0.55)] text-teal-300' : 'group-hover:scale-110'}`} />
-
+                <div className={`relative z-10 flex flex-col items-center ${isSelected ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
                   <span
-                    className={`max-h-[78px] text-[8px] uppercase tracking-[0.18em] transition-all font-semibold leading-none ${isSelected ? 'text-teal-300' : ''}`}
+                    className={`max-h-[72px] text-[9.5px] uppercase tracking-[0.14em] transition-all font-semibold leading-none ${isSelected ? 'text-teal-300' : ''}`}
                     style={{
                       writingMode: 'vertical-rl',
                       transform: side === 'left' ? 'rotate(180deg)' : 'none',

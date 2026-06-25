@@ -1,0 +1,28 @@
+export const SINGULARITY_SOURCE_COMMIT = '51313b398583a84c9347470ce4b575e05739e302';
+
+export const singularitySourceDefaults = {
+  cameraFov: 50,
+  cameraNear: 0.1,
+  cameraFar: 2000,
+  cameraPosition: [1, 0.5, 3] as const,
+  toneMappingExposure: 1.2,
+  bloomStrength: 0.217,
+  bloomRadius: 0,
+  bloomThreshold: 0,
+  pixelRatio: 2,
+  backgroundIntensity: 2,
+  iterations: 128,
+  stepSize: 0.0071,
+  noiseFactor: 0.01,
+  power: 0.3,
+  originRadius: 0.13,
+  bandWidth: 0.03,
+  rampCol1: '#f2b56f',
+  rampPos1: 0.05,
+  rampCol2: '#240d08',
+  rampPos2: 0.425,
+  rampCol3: '#000000',
+  rampPos3: 1,
+  rampEmission: 2,
+  emissionColor: '#242117',
+};

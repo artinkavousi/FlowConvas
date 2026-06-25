@@ -1,8 +1,9 @@
 /**
  * types.ts — the ARTINOS registry entry shape.
  *
- * One `ArtinosModule` per reusable module, co-located with the module source as
- * `<id>.module.ts`. Mirrors the registry schema in ARTINOS-PRD §11. The control
+ * One `ArtinosModule` per reusable module or Lab, preferably co-located as
+ * `<Feature>.meta.ts` beside the owned source. Legacy `<id>.module.ts` registry
+ * entries are still supported. Mirrors the registry schema in ARTINOS-PRD §11. The control
  * schema reuses PANELFLOW's `ComponentSchema` as the canonical source (ADR-5),
  * so showcases drive PANELFLOW's auto-generated control panel directly.
  */
@@ -15,7 +16,7 @@ export interface ArtinosModule {
   id: string;
   /** Display name. */
   name: string;
-  /** Classification — canonical set: 'ui' | '3d' | 'shader' | 'particles' | 'postfx' | 'material'. */
+  /** Classification path, e.g. 'core', 'webgpu', 'physics/fluid', 'rendering/postfx', or 'lab'. */
   category: string;
   /** What it does and when to use it. */
   description: string;

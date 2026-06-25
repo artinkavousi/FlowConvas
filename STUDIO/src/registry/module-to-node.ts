@@ -17,6 +17,19 @@ const CATEGORY_DOMAIN: Record<string, NodeDomain> = {
   particles: 'particles',
   postfx: 'postfx',
   material: 'materials',
+  core: 'core',
+  webgpu: 'core',
+  input: 'core',
+  performance: 'core',
+  math: 'core',
+  'physics/fluid': 'particles',
+  'physics/particles': 'particles',
+  'physics/metaballs': 'particles',
+  'rendering/screenspace': 'scene',
+  'rendering/postfx': 'postfx',
+  shaders: 'tsl',
+  painting: 'ui',
+  lab: 'scene',
 };
 
 function paramType(p: SchemaParam): { type: PortType; ui: Param['ui'] } {

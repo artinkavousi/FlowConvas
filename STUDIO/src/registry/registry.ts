@@ -1,19 +1,20 @@
 /**
  * registry.ts — the ARTINOS reusable-block registry.
  *
- * Modules are discovered at runtime from their co-located `<id>.module.ts` files
- * via Vite's `import.meta.glob` (ADR-6). No codegen, no DB — files are the source
- * of truth. Search/filter/lookup power the gallery and showcase.
+ * Modules are discovered at runtime from co-located registry metadata. Preferred
+ * entries are `*.meta.ts`; legacy direct module entries remain supported as
+ * `<id>/<id>.module.ts`. No codegen, no DB — files are the source of truth.
  */
 
 import type { ArtinosModule } from './types';
 
-// Eagerly import every module entry. Each file default-exports an ArtinosModule.
-// Reusable component modules live under `modules/<id>/`; faithful Lab replicas
-// (compositions built from those modules) live under `labs/<id>/`. Both register
-// the same way so the gallery/graph/MCP surface them uniformly.
+// Eagerly import every registry entry. Runtime files may also be named
+// `*.module.ts`, so recursive discovery is limited to preferred `*.meta.ts`
+// entries plus legacy one-folder module entries.
 const modules = {
+  ...import.meta.glob<{ default: ArtinosModule }>('../modules/**/*.meta.{ts,tsx}', { eager: true }),
   ...import.meta.glob<{ default: ArtinosModule }>('../modules/*/*.module.{ts,tsx}', { eager: true }),
+  ...import.meta.glob<{ default: ArtinosModule }>('../labs/*/*.meta.{ts,tsx}', { eager: true }),
   ...import.meta.glob<{ default: ArtinosModule }>('../labs/*/*.module.{ts,tsx}', { eager: true }),
 };
 

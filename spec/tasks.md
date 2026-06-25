@@ -159,7 +159,7 @@
 #### [x] T-12 (M): Converter workflow document  *(parallel-safe with T-13)*
 - **Satisfies:** FR-14, FR-15, FR-17
 - **Files:** `spec/converter-workflow.md` (create)
-- **Interface:** a concrete, agent-followable procedure that: lists accepted inputs (ARTINOS-PRD §10); gives the step-by-step conversion process (§17 agent process); enumerates the §18 deliverables and maps each to a file in the module-folder contract (`<id>/<id>.module.ts` + `<id>Preview.tsx`); states the fidelity rules (AGENTS.md §4 — port directly, preserve visuals/behavior/physics/shaders, report deviations); and the decomposition model (§9) without over-splitting (AGENTS.md §3). References the scaffold (T-13) and validation (T-15) scripts.
+- **Interface:** a concrete, agent-followable procedure that: lists accepted inputs (ARTINOS-PRD §10); gives the step-by-step conversion process (§17 agent process); enumerates the §18 deliverables and maps each to the preferred module/Lab contracts (`modules/<category>/<Feature>.module.ts(x)` + `<Feature>.showcase.tsx` + `<Feature>.meta.ts`, plus `labs/<id>/` for Mode B); states the fidelity rules (AGENTS.md §4 — port directly, preserve visuals/behavior/physics/shaders, report deviations); and the smart decomposition model (§9) that extracts reusable cores/adapters without over-splitting (AGENTS.md §3). References the scaffold (T-13) and validation (T-15) scripts.
 - **Pattern:** mirror ARTINOS-PRD §10/§17/§18 and AGENTS.md §4; map outputs to the `ArtinosModule` fields from T-4.
 - **Out of scope:** performing any specific conversion (T-14).
 - **Acceptance:** every §18 deliverable maps to a named file/field; a reader with only the repo + this doc could produce a registered, showcased module without further context.

@@ -1,7 +1,7 @@
 # ARTINOS Module Converter — Workflow
 
 > The documented, agent-followed **procedure** for turning any accepted input into a
-> registered, showcased ARTINOS module. This is the converter (ARTINOS-PRD §10) —
+> registered, showcased ARTINOS module or faithful Lab replica. This is the converter (ARTINOS-PRD §10) —
 > a workflow + scaffold script, **not** a bespoke runtime (decisions ADR-7).
 > This is the operational layer of — and **adopts** — the master guideline
 > `ARTINPRD MODULE CONVERTER.md` (repo root, the single source of truth): read that for the
@@ -31,92 +31,127 @@ shader, WebGPU demo, GitHub repo, CodePen, local project, UI block, full page, o
    runtime logic, UI, shaders, interactions, presets, controls. If the source can't
    be found, **report BLOCKED** with the missing path; do not invent a replacement
    (root `AGENTS.md` §4).
-2. **Identify the reusable core.** Separate the valuable, reusable system from
-   project-specific scaffolding.
-3. **Strip unrelated scaffolding.** Drop build harnesses, demo routing, unrelated pages.
-4. **Decompose** per the model below (§4) — compact modules, no over-splitting.
-5. **Port directly, preserve identity.** Copy the original implementation as directly
+2. **List all major systems.** Identify universal systems, domain-reusable systems, project-specific
+   systems, scaffolding to discard, and everything needed to replicate the original faithfully.
+3. **Search existing ARTINOS modules.** Reuse or extend existing modules instead of duplicating.
+4. **Strip unrelated scaffolding.** Drop build harnesses, demo routing, unrelated pages.
+5. **Decompose aggressively** per the model below (§4) — extract the **maximum set** of genuinely
+   reusable cores, especially the universal primitives hiding under the domain logic (GPGPU substrates,
+   grid/sampling math, field display, input/splat models, postfx). Name by capability; each core must
+   prove reuse outside the source (its showcase runs it standalone) or be folded back in. Keep modules
+   compact and avoid fake helper sprawl — a one-module split of a rich source is a failure.
+6. **Port directly, preserve identity.** Copy the original implementation as directly
    as possible; keep visuals, behavior, physics, animation, sound, and shader logic
    exactly (root `AGENTS.md` §4). Make only minimal edits for imports/paths/types.
    Report any unavoidable deviation.
-6. **Add controls + presets** — define the parameter schema and named presets.
-7. **Build the showcase** — automatic: a registered module gets its showcase from the
+7. **Create canonical reusable modules** under `STUDIO/src/modules/<category>/`.
+8. **For full projects, rebuild a faithful Lab** under `STUDIO/src/labs/<id>/` using the modules,
+   with local copied snapshots in `labs/<id>/modules/` and project-only code in grouped `local/`
+   folders (`presets/`, `composition/`, `tuning/`, `interaction/`, ...).
+9. **Add controls + presets** — define the PANELFLOW schema and named presets.
+10. **Build the showcase** — automatic: a registered module/Lab gets its showcase from the
    Studio's `Showcase` component (live preview + auto-generated controls + usage).
-8. **Add registry metadata** — fill every `ArtinosModule` field (§3).
-9. **Add dependency + usage + agent notes.**
-10. **Validate inside ARTINOS** — `npm run check-registry -w STUDIO` plus build /
+11. **Add registry metadata** — fill every `ArtinosModule` field (§3), including provenance.
+12. **Add dependency + usage + agent notes.**
+13. **Validate inside ARTINOS** — `npm run check-registry -w STUDIO` plus build /
     preview / console proof (§5).
 
 ## 3. Deliverables → where they live (ARTINOS-PRD §18 mapped to the module contract)
 
-A module is a folder `STUDIO/src/modules/<id>/` discovered automatically by the
-registry (`import.meta.glob`). Map each §18 deliverable to a file/field:
+Preferred registry entries are `*.meta.ts` files discovered automatically by the registry
+(`import.meta.glob`). Legacy direct `<id>.module.ts` entries remain supported. Map each §18
+deliverable to a file/field:
 
 | §18 deliverable | Where it goes |
 |-----------------|---------------|
-| Reusable source module | `STUDIO/src/modules/<id>/` (ported source) or referenced via `sourcePath` if owned in PANELFLOW |
+| Reusable source module | `STUDIO/src/modules/<category>/<Feature>.module.ts(x)` (ported source) or referenced via `sourcePath` if owned in PANELFLOW |
+| Faithful Lab replica | `STUDIO/src/labs/<id>/` with `modules/` snapshots + grouped `local/` project modules |
 | Showcase / demo page | Automatic — the Studio `Showcase` renders it from the entry (no per-module page) |
-| Registry entry | `<id>.module.ts` → `export default` an `ArtinosModule` |
+| Registry entry | `<Feature>.meta.ts` → `export default` an `ArtinosModule` |
 | Component metadata | `ArtinosModule` fields: `id, name, category, description, tags, version, updatedAt` |
 | Dependency list | `ArtinosModule.dependencies` (include `'webgpu'` if required) |
-| Preview configuration | `<PascalId>Preview.tsx` (reads the PANELFLOW bridge by `schema.id`) + `ArtinosModule.preview` |
+| Preview configuration | `<Feature>.showcase.tsx` or `<PascalId>Lab.tsx` (reads the PANELFLOW bridge by `schema.id`) + `ArtinosModule.preview` |
 | Inspector controls | `ArtinosModule.schema` (PANELFLOW `ComponentSchema`) — drives the auto-panel |
 | Usage documentation | `ArtinosModule.usage` (copy-paste snippet) |
 | Copy-paste instructions | `ArtinosModule.usage` + `dependencies` + `sourcePath` |
 | Agent instructions | `ArtinosModule.agentNotes` |
 | Validation checklist | `ArtinosModule.validation` + `npm run check-registry` |
-| Optional graph/node def | Post-MVP (FR-9) — not required |
+| Provenance | `agentNotes` / `reuseNotes` plus optional exported `moduleProvenance` |
+| Optional graph/node def | Automatic from registry where available |
 | Optional app/page template | Post-MVP — not required |
 | Optional export package | Post-MVP — not required |
 
 ## 4. Decomposition model (ARTINOS-PRD §9, AGENTS.md §3)
 
 Pick the mode from what the input contains (master guideline §3):
-- **Mode A** — one reusable core → **one** module. The default; most conversions are Mode A.
-- **Mode B** — a full project / several reusable systems → **one module per system** + an optional
-  composition module that rebuilds the original faithfully. There is no `labs/` tree; each module's
-  self-contained engine is its capsule, and shared cores share via package promotion
-  (`spec/promotion-workflow.md`), not snapshot copies.
+- **Mode A** — one reusable core → **one** canonical module. The default for small inputs.
+- **Mode B** — a full project / several reusable systems → canonical reusable modules **plus** a
+  faithful Lab replica. The Lab has its own `modules/` snapshot copies so it remains exportable and
+  copy-pasteable, plus grouped `local/` project-specific modules.
 
 Classify the work; prefer one strong compact file over many weak ones:
-- **Reusable Component** — small self-contained UI/visual → a `*.tsx` in the module folder.
-- **Reusable Module** — behavior + state + visuals + controls bundled → the module folder.
-- **Showcase** — automatic via the registry + `Showcase`.
-- **Runtime System** — a system reused across modules (e.g. a Three.js runtime) → lives
-  in PANELFLOW or a shared Studio file, referenced by `dependencies`/`sourcePath`.
+- **Core Universal Module** — `core`, `webgpu`, `input`, `performance`, `math`.
+- **Domain Reusable Module** — `physics/fluid`, `physics/particles`, `physics/metaballs`,
+  `rendering/screenspace`, `rendering/postfx`, `shaders`, `painting`.
+- **Project-Specific Reusable Module** — `labs/<id>/local/<purpose>/`.
+- **Lab Snapshot Copy** — `labs/<id>/modules/<category>/`, with provenance back to the canonical source.
+- **Scaffolding** — discarded unless required to reproduce the original experience.
 
 Do **not** create deep nesting, fake abstractions, or split a file unless it is
 genuinely too large or reused by more than one module.
 
-## 5. Module-folder contract (mirror the seed modules)
+Extraction bar (aim high — extract the maximum set of real cores):
+- Do not trap reusable systems inside a demo-shaped module; a one-module split of a rich source fails.
+- **Look under the domain for the universal primitives** — the non-domain systems hiding inside a demo
+  are usually the bigger library win. For each system ask *"what is its generalized form, and what else
+  could it build?"* (e.g. a TSL fluid → `webgpu` compute-field + `math` grid-sampling +
+  `rendering/screenspace` field-display + `input` splat, plus the fluid solver — five modules, not one).
+- Pull out obvious reusable rendering, WebGPU/GPGPU, physics/particle, input/interaction/splat,
+  environment, postfx, field/data display, math, grid/sampling, and performance systems.
+- Keep backend-specific or source-specific code as adapters when that makes the core usable by other
+  projects.
+- **Prove the reuse:** each extracted core must be generalized enough that its own showcase runs it
+  **outside** the source's domain; if it can't stand alone, fold it back in (no fake
+  `utils/index/types` files).
+- Preserve the original behavior in the Lab composition; generalize the reusable modules by clean
+  capability boundaries, not by weakening fidelity.
 
-Copy the shape of `STUDIO/src/modules/gooey-slider/`:
+## 5. Module-folder contract
+
+Preferred canonical module shape:
 
 ```
-STUDIO/src/modules/<id>/
-  <PascalId>Preview.tsx   # default export; reads useBridgeStore raw slice (default OUTSIDE the selector — ADR-13)
-  <id>.module.ts          # default export: ArtinosModule (id === schema.id)
+STUDIO/src/modules/<category>/
+  <Feature>.module.tsx    # self-contained runtime/component source
+  <Feature>.showcase.tsx  # bridge-driven live showcase (default OUTSIDE the selector — ADR-13)
+  <Feature>.meta.ts       # default export: ArtinosModule (id === schema.id)
 ```
 
 **Rules learned in execution (decisions.md ADR-13):** the preview must select the raw
 bridge slice — `useBridgeStore((s) => s.componentValues['<id>'])` — and apply fallback
 defaults *outside* the selector. Never `... || {}` inside the selector.
 
-Scaffold the boilerplate with: `npm run new-module -w STUDIO -- <id> --category <cat>`.
+Scaffold the boilerplate with: `npm run new-module -w STUDIO -- <id> --category <category/path>`.
 
-**Canonical categories** (`category` is a free string; use these values so the gallery filters
-and the library stays multi-domain — plan-completion D-F):
+Use explicit category paths:
 
 | Category | Use for |
 |---|---|
-| `ui` | React/UI/visual components and animated blocks |
-| `3d` | Three.js / R3F scenes and scene capsules |
-| `shader` | TSL / WebGPU / GLSL shader effects (set `dependencies: ['webgpu', …]` when WebGPU-only) |
-| `particles` | Particle fields and GPU particle systems |
-| `postfx` | Post-processing effects (bloom, chromatic aberration, grain, …) |
-| `material` | Reusable materials / PBR setups |
+| `core` | Animation loops, pointer-independent lifecycle utilities, performance monitor contracts |
+| `webgpu` | Adapters, ping-pong buffers, render target pools |
+| `input` | Pointer brush, gesture input, interaction models |
+| `performance` | Quality scalers, telemetry, profiling |
+| `math` | Noise functions, color functions, spatial helpers |
+| `physics/fluid` | Fluid solvers, pressure/advection/vorticity systems |
+| `physics/particles` | Particle systems, N-body forces, spatial grids |
+| `physics/metaballs` | Field solvers and metaball surfaces |
+| `rendering/screenspace` | Screen-space surfaces and renderers |
+| `rendering/postfx` | Bloom, chromatic aberration, grain, post effects |
+| `shaders` | TSL/WebGPU/GLSL shader modules |
+| `painting` | Brush engines, stroke emitters, painting interactions |
+| `lab` | Faithful Lab registry entries |
 
-Add a new category only when none of these fit; keep the set small.
+Add a new category path only when none of these fit and the name is explicit.
 
 ## 6. Validation (Definition of Done)
 
@@ -126,7 +161,9 @@ A converted module is done only when:
 - `npm run lint -w STUDIO` passes.
 - Dev preview: the module's showcase opens, the live preview renders, and changing a
   control drives it — with zero console errors.
-- Fidelity: a side-by-side check confirms the converted module matches the source;
+- For Mode B: canonical modules are registered, the Lab replica is registered, the Lab contains
+  required `modules/` snapshots with provenance, and project-specific code is grouped under `local/`.
+- Fidelity: a side-by-side check confirms the converted module/Lab matches the source;
   deviations are reported.
 - The library stays in sync (`STUDIO/AGENTS.md` §sync) — entry + showcase reflect the
   current source.

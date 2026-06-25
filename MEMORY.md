@@ -24,13 +24,14 @@
 
 ## 1. Prime Project Memory
 
-- ARTINOS is a local-first creative studio, registry, converter, and agent-operable build system for reusable interactive visual modules: React components, panels, UI blocks, 3D scenes, shaders, TSL/WebGPU systems, pages, and workflows.
+- ARTINOS is a local-first creative studio, registry, converter, and agent-operable build system for reusable interactive visual modules plus faithful Lab replicas: React components, panels, UI blocks, 3D scenes, shaders, TSL/WebGPU systems, pages, and workflows.
 - PANELFLOW is an independent, universal, self-contained UI/UX, dock, panel, design-system, and control-surface package. Treat it like an installable `node_modules` package.
 - ARTINOS consumes PANELFLOW and builds ARTINOS-specific interface, modules, registry, showcases, branding, and workflows on top of it.
 - Do not hardcode ARTINOS assumptions into PANELFLOW. Host-specific branding/content belongs in `STUDIO`, not the package.
 - PANELFLOW files and components should be copy-pasteable into other React projects with minimal dependency pain.
-- ARTINOS modules should also stay copy-paste portable: compact, self-contained, with listed dependencies and no unnecessary lock-in to ARTINOS shell logic.
-- The current preferred UX model is: component/project runs in the main viewport; Scene Settings, Inspector, and Library are the main dock panels; graph/tools are secondary panels.
+- ARTINOS modules should also stay copy-paste portable: compact, self-contained, with listed dependencies and no unnecessary lock-in to ARTINOS shell logic. New conversions use `<Feature>.module.ts(x)` for runtime source, `<Feature>.showcase.tsx` for the bridge-driven showcase, and `<Feature>.meta.ts` for the registry entry.
+- Full project conversions must produce both canonical reusable modules under `STUDIO/src/modules/<category>/` and a faithful Lab under `STUDIO/src/labs/<id>/` with local `modules/` snapshots plus grouped `local/` project modules.
+- The current preferred UX model is: component/project runs in the main viewport; Scene Settings, Inspector, Library, and Lab Capsules are the main dock panels; graph/tools are secondary panels.
 - The Inspector is the user-facing home for active component/project controls and information. Generated auto-control panels can exist internally, but should not clutter the rail unless explicitly exposed.
 
 ---
@@ -61,7 +62,7 @@ Owns:
 - Module discovery, search, selection, active module state, and preview stage.
 - Library and active-module Inspector panels specific to ARTINOS.
 - Conversion workflow and module scaffold/check scripts.
-- ARTINOS modules under `STUDIO/src/modules/<id>/`.
+- ARTINOS modules under `STUDIO/src/modules/<category>/`; full project Labs under `STUDIO/src/labs/<id>/`.
 
 Must not:
 - Rebuild PANELFLOW panel/control/dock/design systems in STUDIO.
@@ -80,7 +81,7 @@ Must not:
 - Viewport is the live stage, not a documentation page. Controls and metadata live in dock panels.
 - The graph is an optional panel, not the hardcoded center of the dock.
 - The dock is a multi-panel host using resizable split columns plus a vertical icon rail.
-- Current main panels are consolidated around meaningful surfaces: `Scene Settings`, `Inspector`, and `Library`. `Node Graph` is secondary/optional. Avoid bringing back old stub panels like generic Code/Engine placeholders.
+- Current main panels are consolidated around meaningful surfaces: `Scene Settings`, `Inspector`, `Library`, and `Lab Capsules`. `Node Graph` is secondary/optional. Avoid bringing back old stub panels like generic Code/Engine placeholders.
 - PANELFLOW owns the shared performance monitor contract. Host modules and reusable components should publish real render-loop telemetry through `usePerformanceTelemetry` / `publishPerformanceStats`; the dock monitor must display unavailable values honestly instead of decorative FPS/compute/memory constants.
 
 ---
@@ -109,27 +110,33 @@ Never return a fresh fallback object inside the selector, such as `s.componentVa
 
 ## 5. Module And Registry Rules
 
-- Module folder shape:
+- Preferred module folder shape:
 
 ```txt
-STUDIO/src/modules/<id>/
-  <PascalId>Preview.tsx
-  <id>.module.ts
+STUDIO/src/modules/<category>/
+  <Feature>.module.tsx
+  <Feature>.showcase.tsx
+  <Feature>.meta.ts
 ```
 
-- Each `<id>.module.ts` default-exports an `ArtinosModule`.
-- Registry discovery uses `import.meta.glob('../modules/*/*.module.{ts,tsx}', { eager: true })`.
+- Each `<Feature>.meta.ts` default-exports an `ArtinosModule`. Existing legacy `<id>.module.ts` entries remain supported only for compatibility.
+- Registry discovery uses preferred `import.meta.glob('../modules/**/*.meta.{ts,tsx}', { eager: true })` plus legacy one-folder module entries and top-level Lab entries.
 - Required fields include: `id`, `name`, `category`, `description`, `tags`, `schema`, `preview`, `sourcePath`, `dependencies`, `usage`, `agentNotes`, `version`, `updatedAt`.
 - `agentNotes` must let another agent use or extend the module without reading the source first.
 - When module source changes, update metadata, `usage`, `dependencies`, `agentNotes`, `validation`, and `updatedAt`.
 - Run `npm run check-registry -w STUDIO` after any module/registry change.
-- Useful one-off results should be captured as reusable modules. No useful system stays trapped in a demo.
+- Useful one-off results should be decomposed into reusable modules and, for projects, rebuilt as faithful Labs. No useful system stays trapped in a demo.
+- Converter decomposition should be smart and library-expanding: extract reusable rendering, WebGPU,
+  physics/particle, input/interaction, environment, postfx, math, and performance systems when present.
+  Keep source-specific adapters/composition/tuning in the faithful Lab so canonical modules stay
+  generalized and reusable across many future projects.
 
 ---
 
 ## 6. Conversion / Porting Memory
 
 - Always locate and inspect source files before porting.
+- For full projects, decompose into canonical modules plus a faithful Lab replica. The Lab must carry copy-pasteable `modules/` snapshot copies of the reusable systems it needs and grouped `local/` project-specific modules.
 - Port directly first. Preserve source logic, visuals, interactions, animation, physics, shaders, materials, presets, and naming as much as possible.
 - Make only minimum compatibility edits for imports, paths, types, styling hooks, and integration.
 - If the source cannot be found or is incompatible, report `BLOCKED` with evidence instead of inventing a generic replacement.

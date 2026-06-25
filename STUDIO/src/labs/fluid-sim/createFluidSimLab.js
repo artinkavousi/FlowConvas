@@ -1,6 +1,6 @@
 // createFluidSimLab — full faithful replica of REF/src/main.js.
 //
-// Wires ALL the reusable systems (ported verbatim under engine/) into the
+// Wires ALL the reusable systems (ported verbatim under modules/) into the
 // complete original experience: WebGPURenderer + FluidSimulation (+ internal
 // ParticleSystem) + EmitterSystem + AudioReactivity + PresetManager +
 // QualityScaler + FluidInput. Replaces the original's Tweakpane GUI with the
@@ -13,15 +13,15 @@
 // (autoplay policy) — exposed via startAudio()/stopAudio() for the preview.
 
 import { WebGPURenderer } from 'three/webgpu';
-import { config, applyDeviceDefaults, setIntegratedGpuFlag } from './engine/config.js';
-import { requireWebGPU } from './engine/compat/webgpu.js';
-import { FluidInput } from './engine/input.js';
-import { AudioReactivity } from './engine/audio/AudioReactivity.js';
-import { EmitterSystem } from './engine/emitters/EmitterSystem.js';
-import { FluidSimulation } from './engine/fluid/FluidSimulation.js';
-import { QualityScaler } from './engine/performance/QualityScaler.js';
-import { PresetManager } from './engine/presets/PresetManager.js';
-import { setTargetWorld } from './engine/audio/targetRegistry.js';
+import { config, applyDeviceDefaults, setIntegratedGpuFlag } from './modules/config.js';
+import { requireWebGPU } from './modules/compat/webgpu.js';
+import { FluidInput } from './modules/input.js';
+import { AudioReactivity } from './modules/audio/AudioReactivity.js';
+import { EmitterSystem } from './modules/emitters/EmitterSystem.js';
+import { FluidSimulation } from './modules/fluid/FluidSimulation.js';
+import { QualityScaler } from './modules/performance/QualityScaler.js';
+import { PresetManager } from './modules/presets/PresetManager.js';
+import { setTargetWorld } from './modules/audio/targetRegistry.js';
 
 const INITIAL_PRESET = 'aurora';
 

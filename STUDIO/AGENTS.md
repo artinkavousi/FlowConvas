@@ -3,7 +3,7 @@
 > Rules for any agent building, converting, or maintaining modules in the ARTINOS Studio.
 > Read with the root `AGENTS.md` (preserve identity, port directly, verify with proof),
 > root `MEMORY.md` (current package boundaries and accepted project memory), and
-> `spec/converter-workflow.md` (how to convert an input into a module) and its master guideline
+> `spec/converter-workflow.md` (how to convert an input into reusable modules + Labs) and its master guideline
 > `ARTINPRD MODULE CONVERTER.md` at the repo root (full model, conversion modes, report format).
 > ARTINOS is single-user, local-first; the registry is file-based; PANELFLOW is a built dependency —
 > don't rebuild it.
@@ -30,16 +30,36 @@ ARTINOS grows through reuse, not duplication. If a module already covers the nee
 - **Graph spotlight** — every module is also a graph node (`module/<id>`); press **Space** on the
   Node Graph canvas to search and drop one in.
 
-## 2. How a module is structured
+## 2. How modules and Labs are structured
 
-A module is a folder `STUDIO/src/modules/<id>/` auto-discovered by the registry (`import.meta.glob`):
+A new reusable module uses the self-contained module shape:
 ```
-<id>/
-  <PascalId>Preview.tsx   # default export; live preview
-  <id>.module.ts          # default export: ArtinosModule (id === schema.id)
+STUDIO/src/modules/<category>/
+  <Feature>.module.tsx    # self-contained runtime/component source
+  <Feature>.showcase.tsx  # bridge-driven live showcase
+  <Feature>.meta.ts       # default export: ArtinosModule (id === schema.id)
 ```
-Scaffold with `npm run new-module -w STUDIO -- <id> --category <cat>`, then fill the TODOs.
-Mirror an existing seed module (`gooey-slider`, `bubble-rating`, `elastic-menu`).
+Scaffold with `npm run new-module -w STUDIO -- <id> --category <category/path>`, then fill the TODOs.
+Use explicit category paths (`core`, `webgpu`, `input`, `performance`, `math`, `physics/fluid`,
+`physics/particles`, `rendering/postfx`, `shaders`, `painting`, etc.). Existing legacy modules under
+`STUDIO/src/modules/<id>/<id>.module.ts` remain supported; do not use that shape for new conversions.
+
+A full project conversion must also create a faithful Lab:
+```
+STUDIO/src/labs/<id>/
+  <PascalId>Lab.tsx
+  <PascalId>Lab.meta.ts
+  create<PascalId>Lab.js
+  modules/                # local snapshots of required reusable modules
+  local/                  # project-specific presets/composition/tuning/interaction
+```
+
+**Smart decomposition rule:** full conversions should grow the library with reusable building blocks,
+not just wrap a demo. Extract obvious core systems into capability-based categories such as `webgpu`,
+`rendering/postfx`, `rendering/environments`, `physics/particles`, `input`, `math`, and
+`performance`. Keep source-specific adapters, presets, tuning, and composition in the Lab when they
+are not yet broadly reusable. The faithful Lab preserves the original identity; the canonical modules
+should be general enough to build other projects.
 
 **Preview rule (decisions ADR-13):** read the bridge as a raw slice and default *outside* the
 selector — `useBridgeStore((s) => s.componentValues['<id>'])`, then `values?.x ?? fallback`.
@@ -60,7 +80,8 @@ Keep it one tight paragraph. Fill `usage`, `dependencies`, `tags`, `related`, an
 - When a module's **source changes**, update its entry (`description`, `usage`, `version`,
   `updatedAt`, `agentNotes`) and confirm its showcase still works.
 - When a showcase reveals a reusable pattern, extract it into the library.
-- When a project produces something useful, capture it as a module.
+- When a project produces useful systems, extract canonical modules and rebuild the original as a
+  copy-pasteable Lab with `modules/` snapshots.
 - No useful system stays trapped in a one-off demo.
 - After any module change, run `npm run check-registry -w STUDIO` — it gates entry completeness,
   `id === schema.id`, `sourcePath` resolution, schema validity, and duplicate ids.

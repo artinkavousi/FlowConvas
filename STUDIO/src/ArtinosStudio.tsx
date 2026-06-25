@@ -25,12 +25,14 @@ import { LibraryPanel } from './panels/library.panel';
 import { ArtinosInspectorPanel } from './panels/inspector.panel';
 import { ConsolePanel } from './panels/console.panel';
 import { AgentPanel } from './panels/agent.panel';
+import { LabCapsulesPanel } from './panels/lab-capsules.panel';
 
 // Register the Studio's own dock panels into the PANELFLOW registry once.
 registerPanel(ArtinosInspectorPanel);
 registerPanel(LibraryPanel);
 registerPanel(ConsolePanel);
 registerPanel(AgentPanel);
+registerPanel(LabCapsulesPanel);
 
 /**
  * Loads the active module: registers its control schema, seeds bridge defaults,
@@ -69,13 +71,10 @@ function useActiveModule() {
 function StudioInner() {
   useActiveModule();
 
-  // On first load, show the Library instead of PANELFLOW's default Inspector.
+  // Keep the dock ordered by workflow: Inspector, Labs, Library, Scene.
   useEffect(() => {
     const panelOS = usePanelOSStore.getState();
-    panelOS.openPanel('scene-settings');
-    panelOS.openPanel('inspector');
-    panelOS.openPanel('library');
-    panelOS.openPanel('console');
+    panelOS.setPanelLayout(['inspector', 'lab-capsules', 'library', 'scene-settings'], 'lab-capsules');
   }, []);
 
   return (

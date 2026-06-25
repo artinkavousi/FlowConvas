@@ -39,9 +39,10 @@ review, scaffolding, docs, anything reusable across sessions. Not for one-off ta
 ## ARTINOS context to bake into generated skills
 
 When the new skill touches modules, reference these instead of restating them:
-- **Registry** is file-based: `STUDIO/src/modules/<id>/{<id>.module.ts, <PascalId>Preview.tsx}`,
-  auto-discovered (`registry.ts`). One `ArtinosModule` per module.
-- **Scaffold**: `npm run new-module -w STUDIO -- <id> --category <cat>`.
+- **Registry** is file-based: preferred entries are
+  `STUDIO/src/modules/<category>/<Feature>.meta.ts` beside `<Feature>.module.ts(x)` and
+  `<Feature>.showcase.tsx`; full project Labs live under `STUDIO/src/labs/<id>/`.
+- **Scaffold**: `npm run new-module -w STUDIO -- <id> --category <category/path>`.
 - **Gate / DoD**: `npm run check-registry -w STUDIO` (must be green) + build/preview/console proof.
   "It builds" is not done.
 - **Discovery for agents**: the Agent panel, the MCP server (`npm run mcp -w STUDIO`, `STUDIO/MCP.md`:
@@ -64,10 +65,11 @@ When the new skill touches modules, reference these instead of restating them:
 - **Don't restate the repo's rules inside the skill.** The DoD, naming, and converter steps live in
   `STUDIO/AGENTS.md` / `spec/converter-workflow.md` — link to them. Copies drift and lie (we already
   hit exactly this with `spec/tasks.md`).
-- **`category` is a free string but the canonical set is fixed** (ui, 3d, shader, particles, postfx,
-  material). A generated module skill must use those so the gallery/website filters stay coherent.
-- **Three.js modules have no types** — the repo pattern is an untyped `engine.js` + a typed `.tsx`
-  wrapper (`allowJs`, no `checkJs`). A skill that scaffolds 3D must follow this, not add `@types/three`.
+- **Use explicit category paths.** A generated module skill should use `core`, `webgpu`, `input`,
+  `performance`, `math`, `physics/fluid`, `physics/particles`, `rendering/postfx`, `shaders`,
+  `painting`, or `lab` unless a clearer path is needed.
+- **Graphics modules must stay self-contained.** Put runtime/source in `*.module.ts(x)` and bridge
+  integration in `*.showcase.tsx`; do not add hidden global app coupling or a generic remake.
 - **Skills are folders, not single files.** Put the skeleton in `template.md` and reference it; don't
   inline 200 lines of boilerplate into SKILL.md.
 
