@@ -332,7 +332,7 @@ export async function createTslVatLifecycleInstances(canvas, options = {}) {
     return positionLocal.add(localVat).add(instancePos).add(sway);
   })();
 
-  material.colorNode = Fn(() => {
+  if (state.vatMaterialMode !== 'basic') material.colorNode = Fn(() => {
     const sourceColor = texture(colorTex, uv()).rgb;
     const outline = texture(outlineTex, uv()).rgb;
     const petalMask = smoothstep(0.08, 0.4, uv().y);
@@ -344,7 +344,7 @@ export async function createTslVatLifecycleInstances(canvas, options = {}) {
     return vec4(color.mul(smoothstep(0.96, 0.75, progress)).add(emissiveColorU.mul(frame).mul(0.05)), 1);
   })();
 
-  material.opacityNode = Fn(() => smoothstep(0, 0.08, frame))();
+  if (state.vatMaterialMode !== 'basic') material.opacityNode = Fn(() => smoothstep(0, 0.08, frame))();
 
   if (state.vatMaterialMode === 'source') material.normalNode = Fn(() => {
     const rawNormal = texture(normalVatTex, sampleUV).rgb.mul(2).sub(1);
@@ -355,7 +355,7 @@ export async function createTslVatLifecycleInstances(canvas, options = {}) {
     return transformNormalToView(normalize(tangent.mul(mapN.x).add(bitangent.mul(mapN.y)).add(normal.mul(mapN.z))));
   })();
 
-  material.emissiveNode = Fn(() => {
+  if (state.vatMaterialMode !== 'basic') material.emissiveNode = Fn(() => {
     const viewDir = normalize(cameraPosition.sub(positionWorld));
     const fresnel = float(1).sub(abs(dot(normalize(vec3(0, 1, 0)), viewDir))).pow(4.2).mul(fresnelIntensityU);
     const wave = smoothstep(0.32, 0, abs(uv().y.sub(fract(time.mul(-0.25).add(instanceSeed)))));
