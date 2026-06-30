@@ -1,7 +1,7 @@
 # Lab: fluid-sim
 
 Faithful, self-contained replica of `REF/WebGpu-Fluid-Simulation-master`, rebuilt from reusable
-ARTINOS components (Mode B — see `spec/fluid-modeb-conversion-plan.md` and `ARTINPRD MODULE CONVERTER.md`).
+ARTINOS components (Mode B — see `spec/fluid-modeb-conversion-plan.md` and `docs/converter-pipeline.md`).
 Supersedes the deleted monolithic `webgpu-fluid` module.
 
 ## What it is

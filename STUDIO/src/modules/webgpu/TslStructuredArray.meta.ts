@@ -31,7 +31,7 @@ const tslStructuredArrayMeta: ArtinosModule = {
   agentNotes:
     "Ported verbatim from ref/AURORA/src/PARTICLESYSTEM/physic/structuredarray.ts (logic identical; only TypeScript types removed so it lives as an untyped .module.js). new StructuredArray(layout, length, label) where layout maps name -> typeName ('float'|'vec2'|'vec3'|'vec4'|'int'|'uint'|'ivec*'|'uvec*'|'mat2'|'mat3'|'mat4') or { type, atomic }. It computes std140-style alignment and a vec4-aligned structSize. CPU side: set(index, name, value) (number | array | {x,y,z,w}). GPU side (TSL): element(index) -> struct node; get(index, name) -> member node you can .assign() in a compute Fn. setAtomic(name, true) flips a member to atomic (used by MLS-MPM grid scatter). .buffer is the underlying instancedArray (has .dispose()). Bridge id 'tsl-structured-array'. WebGPU-only.",
   reuseNotes:
-    'The buffer that backs MLS-MPM particles + grid in AURORA. Reuse for any structured GPGPU sim (boids, cellular automata, springs). Pair with particle-renderer-system to draw it.',
+    'The buffer that backs MLS-MPM particles + grid in AURORA. Reuse for any structured GPGPU sim (boids, cellular automata, springs). Pair with particle-renderer-system to draw it. KNOWN GOTCHA (three r0.185): the buffer label becomes the generated WGSL struct type name, and WGSL identifiers cannot contain hyphens/spaces — the module now sanitizes labels to [A-Za-z0-9_], but pass camelCase/underscore names. Two compat deviations vs the r0.176 source: struct() is given a clean { name: type } map (not the parsed layout), and labels are sanitized. Verified: struct compute compiles + runs error-free on r0.185.',
   validation: { build: true, preview: true, console: true },
   version: '0.1.0',
   updatedAt: '2026-06-24',

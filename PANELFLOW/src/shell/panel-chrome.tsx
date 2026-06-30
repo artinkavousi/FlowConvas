@@ -5,7 +5,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 
 interface PanelChromeProps {
   title: string;
-  icon?: React.ElementType;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
   children: React.ReactNode;
   isDocked?: boolean;
   onClose?: () => void;

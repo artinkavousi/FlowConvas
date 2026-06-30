@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TslColormapPaletteShowcase — bridge-driven live showcase.
  * Maps UV.x → t through the selected gradient's GPU sampler on a fullscreen quad. Switching the

@@ -17,6 +17,20 @@
 >
 > ---
 >
+> ## Documentation (canonical hub)
+>
+> Deep documentation lives in **`docs/`** and is canonical — when anything here is too brief, read it.
+>
+> - `docs/README.md` — documentation map + reading order.
+> - `docs/product.md` — vision, requirements, registry schema, roadmap.
+> - `docs/architecture.md` — STUDIO ↔ PANELFLOW boundary, registry, control/bridge pipeline, structure.
+> - `docs/converter-pipeline.md` — **single source of truth** for the module converter (the 11-step pipeline).
+> - `docs/module-and-lab-standards.md` — module/Lab contract, naming, categories, provenance, promotion.
+> - `docs/blueprinting.md` (+ `docs/templates/blueprint.template.md`) — converter step 7's mandatory blueprint.
+> - `STUDIO/AGENTS.md` — Studio module/registry rules. `spec/decisions.md` — append-only ADR log.
+>
+> ---
+>
 > ## 0. Prime Directive
 >
 > Preserve the project's soul while upgrading the system.

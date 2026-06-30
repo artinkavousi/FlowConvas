@@ -2,9 +2,10 @@
 
 > Rules for any agent building, converting, or maintaining modules in the ARTINOS Studio.
 > Read with the root `AGENTS.md` (preserve identity, port directly, verify with proof),
-> root `MEMORY.md` (current package boundaries and accepted project memory), and
-> `spec/converter-workflow.md` (how to convert an input into reusable modules + Labs) and its master guideline
-> `ARTINPRD MODULE CONVERTER.md` at the repo root (full model, conversion modes, report format).
+> root `MEMORY.md` (current package boundaries and accepted project memory), and the canonical
+> converter docs in the `docs/` hub: `docs/converter-pipeline.md` (the 11-step pipeline — single source
+> of truth, conversion modes, report format), `docs/module-and-lab-standards.md` (the module/Lab
+> contract), and `docs/blueprinting.md` (the mandatory pre-build blueprint).
 > ARTINOS is single-user, local-first; the registry is file-based; PANELFLOW is a built dependency —
 > don't rebuild it.
 
@@ -35,7 +36,7 @@ ARTINOS grows through reuse, not duplication. If a module already covers the nee
 A new reusable module uses the self-contained module shape:
 ```
 STUDIO/src/modules/<category>/
-  <Feature>.module.tsx    # self-contained runtime/component source
+  <Feature>.ts(x) | .js   # self-contained runtime/component source (no .module infix; .js for untyped Three/TSL)
   <Feature>.showcase.tsx  # bridge-driven live showcase
   <Feature>.meta.ts       # default export: ArtinosModule (id === schema.id)
 ```

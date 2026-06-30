@@ -6,8 +6,8 @@
 > verbatim from `REF/src`. Live verification: WebGPU bound + preset applied + loop ticking + zero
 > console errors (full animated capture blocked only by the hidden-preview rAF/WebGPU-capture limit —
 > see memory `preview-raf-paused-when-hidden`).
-> Governed by `ARTINPRD MODULE CONVERTER.md` (master guideline, Mode B / §3 / §6 / §15) and
-> `spec/converter-workflow.md`. This plan decomposes the whole REF fluid project into reusable
+> Governed by `docs/converter-pipeline.md` (single source of truth — Mode B / §3 / §6 / §8) and
+> `docs/module-and-lab-standards.md`. This plan decomposes the whole REF fluid project into reusable
 > ARTINOS component modules **and** rebuilds the original app faithfully from them.
 >
 > **Supersedes:** `STUDIO/src/modules/webgpu-fluid/` (the old monolithic single-module port). That

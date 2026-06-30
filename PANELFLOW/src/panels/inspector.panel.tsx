@@ -152,7 +152,7 @@ function ExportView() {
     const doc: WorkflowDoc = {
       $schema: 'artinos/nsgraph-1',
       version: 1,
-      three_version: 'r184',
+      three_version: 'r185',
       title: previewTarget ? `Preview: ${previewTarget}` : 'PanelFlow Graph Material',
       slug: previewTarget ?? 'graph-material',
       graph,

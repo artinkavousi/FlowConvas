@@ -1,4 +1,5 @@
 import { WebGPURenderer } from 'three/webgpu';
+import { inspectRenderer, detachInspector } from '@/inspector/attach';
 
 export class DisposeScope {
   items: any[] = [];
@@ -16,7 +17,7 @@ export class DisposeScope {
   }
 }
 
-export async function createRendererHost(canvas: HTMLCanvasElement, options: { antialias?: boolean, forceWebGL?: boolean }) {
+export async function createRendererHost(canvas: HTMLCanvasElement, options: { antialias?: boolean, forceWebGL?: boolean, inspect?: boolean }) {
   const renderer = new WebGPURenderer({
     canvas,
     antialias: options.antialias ?? true,
@@ -24,8 +25,11 @@ export async function createRendererHost(canvas: HTMLCanvasElement, options: { a
     alpha: true,
     forceWebGL: options.forceWebGL || false,
   });
-  
+
   await renderer.init();
+
+  // Attach the headless inspector so the Telemetry panel sees this renderer.
+  if (options.inspect !== false) inspectRenderer(renderer);
 
   return {
     rawRenderer: renderer,
@@ -43,6 +47,7 @@ export async function createRendererHost(canvas: HTMLCanvasElement, options: { a
       return (renderer as any).info;
     },
     dispose() {
+      detachInspector(renderer);
       renderer.dispose();
     }
   };

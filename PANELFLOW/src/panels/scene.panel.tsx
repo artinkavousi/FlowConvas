@@ -1,15 +1,18 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import {
   Activity,
-  BarChart3,
-  CheckCircle2,
+  Box,
+  Circle,
   Cpu,
   Eye,
   Grid3X3,
+  Layers,
   Monitor,
   Orbit,
   ScanLine,
+  ScrollText,
   Sparkles,
+  Square,
   Sun,
   Workflow,
   Zap,
@@ -18,8 +21,8 @@ import { definePanel } from '@/panel-os/define-panel';
 import { PanelShell } from '@/panel-os/panel-shell';
 import { useGraphStore, type SceneSettings } from '@/graph/graph-store';
 import { defaultPanelCapabilities } from '@/panel-os/panel-types';
-import { detect } from '@/WebGPUCapabilities';
-import { allNodes } from '@/graph/NodeDefinitions';
+import { useInspectorStore } from '@/inspector/inspector-store';
+import { getInspector } from '@/inspector/attach';
 
 type Option<T extends string> = { value: T; label: string };
 
@@ -42,7 +45,10 @@ function Segmented<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div className="grid gap-1 rounded-xl border border-white/8 bg-black/28 p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+    <div
+      className="grid gap-1 rounded-xl border border-white/8 bg-black/28 p-1"
+      style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+    >
       {options.map((option) => {
         const active = option.value === value;
         return (
@@ -91,82 +97,51 @@ function ToggleTile({
   );
 }
 
-function Metric({ icon: Icon, label, value, sub }: { icon: any; label: string; value: string | number; sub: string }) {
+function Chip<T extends string>({
+  value,
+  options,
+  onChange,
+  columns = 3,
+}: {
+  value: T;
+  options: Option<T>[];
+  onChange: (value: T) => void;
+  columns?: number;
+}) {
   return (
-    <div className="rounded-xl border border-white/7 bg-black/24 p-3">
-      <div className="flex items-center justify-between gap-2">
-        <Icon size={14} className="text-teal-300/80" />
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/32">{label}</span>
-      </div>
-      <div className="mt-3 font-mono text-lg font-bold leading-none text-white/88">{value}</div>
-      <div className="mt-1 text-[9px] uppercase tracking-[0.16em] text-white/30">{sub}</div>
+    <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0,1fr))` }}>
+      {options.map((option) => {
+        const active = option.value === value;
+        return (
+          <button
+            key={option.value}
+            onClick={() => onChange(option.value)}
+            className={
+              'min-h-8 rounded-lg border px-2 text-[10px] font-bold capitalize transition ' +
+              (active
+                ? 'border-teal-300/30 bg-teal-300/[0.1] text-white'
+                : 'border-white/7 bg-black/24 text-white/45 hover:bg-white/[0.05] hover:text-white/80')
+            }
+          >
+            {option.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function HealthRow({ label, detail }: { label: string; detail: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-white/[0.025] px-3 py-2">
-      <div>
-        <div className="text-[11px] font-semibold text-white/70">{label}</div>
-        <div className="text-[9px] uppercase tracking-[0.16em] text-white/28">{detail}</div>
-      </div>
-      <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.16em] text-emerald-300">
-        <CheckCircle2 size={12} />
-        Ready
-      </div>
-    </div>
-  );
-}
-
-function useFrameFps() {
-  const [fps, setFps] = useState(60);
-  const frames = useRef(0);
-  const last = useRef(performance.now());
-
-  useEffect(() => {
-    let raf = 0;
-    const tick = () => {
-      frames.current += 1;
-      const now = performance.now();
-      if (now - last.current >= 1000) {
-        setFps(frames.current);
-        frames.current = 0;
-        last.current = now;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  return fps;
-}
-
-function PipelineView() {
+function SceneView() {
   const scene = useGraphStore((s) => s.scene);
   const updateScene = useGraphStore((s) => s.updateScene);
-  const stats = useGraphStore((s) => s.stats);
-  const [detectedBackend, setDetectedBackend] = useState('detecting');
-  const fps = useFrameFps();
-  const nodesCount = useMemo(() => allNodes().length, []);
-
-  useEffect(() => {
-    let alive = true;
-    detect().then((caps) => alive && setDetectedBackend(caps.backend));
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const inspectorSettings = useInspectorStore((s) => s.settings);
+  const inspectorAttached = useInspectorStore((s) => s.attached);
 
   const patch = (next: Partial<SceneSettings>) => updateScene(next);
-  const activeFps = stats.fps > 0 ? stats.fps : fps;
-  const computeLabel = stats.computeTime > 0 ? `${stats.computeTime.toFixed(1)}ms` : '--';
-  const backendLabel = (stats.renderer || detectedBackend).toUpperCase();
 
   return (
     <PanelShell>
-      <div className="h-full w-full overflow-y-auto custom-scrollbar space-y-5">
+      <div className="h-full w-full space-y-5 overflow-y-auto custom-scrollbar">
         <Section title="Viewport">
           <Segmented
             value={scene.viewMode}
@@ -184,7 +159,34 @@ function PipelineView() {
           </div>
         </Section>
 
-        <Section title="Render">
+        <Section title="Environment">
+          <Chip
+            value={scene.env}
+            onChange={(env) => patch({ env })}
+            options={[
+              { value: 'none', label: 'None' },
+              { value: 'studio', label: 'Studio' },
+              { value: 'city', label: 'City' },
+              { value: 'sunset', label: 'Sunset' },
+              { value: 'night', label: 'Night' },
+              { value: 'warehouse', label: 'Warehouse' },
+            ]}
+          />
+          <Chip
+            value={scene.geometry}
+            onChange={(geometry) => patch({ geometry })}
+            columns={4}
+            options={[
+              { value: 'sphere', label: 'Sphere' },
+              { value: 'box', label: 'Box' },
+              { value: 'torus', label: 'Torus' },
+              { value: 'plane', label: 'Plane' },
+            ]}
+          />
+          <ToggleTile icon={Layers} label="Volumetric Fog" checked={scene.volumetrics} onChange={(volumetrics) => patch({ volumetrics })} />
+        </Section>
+
+        <Section title="Render / Canvas">
           <Segmented
             value={scene.backend}
             onChange={(backend) => patch({ backend })}
@@ -212,9 +214,19 @@ function PipelineView() {
               { value: 'transmission', label: 'Glass' },
             ]}
           />
+          <Segmented
+            value={scene.antialiasing}
+            onChange={(antialiasing) => patch({ antialiasing })}
+            options={[
+              { value: 'none', label: 'Off' },
+              { value: 'msaa', label: 'MSAA' },
+              { value: 'smaa', label: 'SMAA' },
+              { value: 'fxaa', label: 'FXAA' },
+            ]}
+          />
         </Section>
 
-        <Section title="Quality">
+        <Section title="Post-processing">
           <div className="grid grid-cols-3 gap-2">
             <ToggleTile icon={Sun} label="Shadows" checked={scene.shadows} onChange={(shadows) => patch({ shadows })} />
             <ToggleTile icon={Sparkles} label="Bloom" checked={scene.bloom} onChange={(bloom) => patch({ bloom })} />
@@ -225,21 +237,39 @@ function PipelineView() {
           </div>
         </Section>
 
-        <Section title="Telemetry">
+        <Section title="Debug / Render Modes">
+          <Chip
+            value={scene.debugMode}
+            onChange={(debugMode) => patch({ debugMode })}
+            columns={4}
+            options={[
+              { value: 'none', label: 'Off' },
+              { value: 'normals', label: 'Normals' },
+              { value: 'depth', label: 'Depth' },
+              { value: 'uv', label: 'UV' },
+            ]}
+          />
           <div className="grid grid-cols-2 gap-2">
-            <Metric icon={Activity} label="FPS" value={activeFps} sub="viewport loop" />
-            <Metric icon={Cpu} label="Backend" value={backendLabel} sub="detected" />
-            <Metric icon={Zap} label="Compute" value={computeLabel} sub="frame average" />
-            <Metric icon={BarChart3} label="Nodes" value={nodesCount} sub="definitions" />
+            <ToggleTile
+              icon={Square}
+              label="Overdraw"
+              checked={inspectorSettings.overdraw}
+              onChange={(v) => getInspector().setOverdraw(v)}
+            />
+            <ToggleTile
+              icon={ScrollText}
+              label="Stack Trace"
+              checked={inspectorSettings.captureStackTrace}
+              onChange={(v) => getInspector().setCaptureStackTrace(v)}
+            />
           </div>
-        </Section>
-
-        <Section title="Health">
-          <div className="space-y-2">
-            <HealthRow label="Panel registry" detail="dynamic + auto panels" />
-            <HealthRow label="Control bridge" detail="schema and instance values" />
-            <HealthRow label="Graph runtime" detail="nodes, edges, serialization" />
-          </div>
+          <ToggleTile icon={Circle} label="Stats HUD" checked={scene.showStats} onChange={(showStats) => patch({ showStats })} />
+          {!inspectorAttached && (
+            <p className="rounded-lg border border-white/6 bg-black/24 px-3 py-2 text-[10px] leading-relaxed text-white/32">
+              <Box size={11} className="mr-1 inline" />
+              Render-mode debug toggles apply once a renderer is attached. Open the Telemetry panel for live profiling.
+            </p>
+          )}
         </Section>
       </div>
     </PanelShell>
@@ -249,13 +279,13 @@ function PipelineView() {
 export const ScenePanel = definePanel({
   id: 'scene-settings',
   title: 'Scene',
-  description: 'Viewport and render settings.',
+  description: 'Scene, environment, post-processing and canvas settings.',
   icon: Workflow,
   defaultPlacement: 'right',
   defaultSize: 390,
   minSize: 320,
   maxSize: 620,
   capabilities: { ...defaultPanelCapabilities },
-  component: PipelineView,
-  tags: ['core', 'scene', 'render', 'engine', 'diagnostics'],
+  component: SceneView,
+  tags: ['core', 'scene', 'environment', 'render', 'postprocessing'],
 });

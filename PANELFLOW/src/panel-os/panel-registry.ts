@@ -2,6 +2,7 @@ import type { PanelDefinition } from '@/panel-os/panel-types';
 import { ScenePanel } from '@/panels/scene.panel';
 import { InspectorPanel } from '@/panels/inspector.panel';
 import { GraphPanel } from '@/panels/graph.panel';
+import { TelemetryPanel } from '@/panels/inspector/telemetry.panel';
 import { usePanelOSStore } from '@/panel-os/panel-store';
 
 /** Panel id -> definition. The single source of panel truth. */
@@ -9,6 +10,7 @@ export const PANEL_REGISTRY: Record<string, PanelDefinition> = {
   [ScenePanel.id]: ScenePanel,
   [GraphPanel.id]: GraphPanel,
   [InspectorPanel.id]: InspectorPanel,
+  [TelemetryPanel.id]: TelemetryPanel,
 };
 
 export const PANEL_DEFINITIONS = (): PanelDefinition[] => Object.values(PANEL_REGISTRY);

@@ -56,6 +56,22 @@ Build in 6 phases (universal cores → solver+render → physics dressing → lo
 phase ends green on check-registry + lint + a live control-driven preview before the next starts. This
 keeps the registry valid throughout and lets a cheaper model execute self-contained tasks.
 
+## ADR-A10 — three r0.185 TSL struct compat (found in Phase 1, de-risks MLS-MPM)
+Porting `StructuredArray` (the buffer behind MLS-MPM particles + grid) to STUDIO's **three r0.185**
+(AURORA is r0.176) surfaced two compat issues, both fixed in the module (recorded deviations):
+1. **`struct()` argument shape.** r0.185's `struct()` wants a clean `{ name: 'type' }` map (per three
+   examples). AURORA passed the fully-parsed layout (objects with `size/alignment/offset/...`), which
+   r0.185 mis-parses → invalid WGSL. Fix: build a clean type map for `struct()`, keep the parsed
+   layout only for CPU `set()` offsets.
+2. **WGSL-safe buffer labels.** r0.185 derives the generated WGSL struct *type name* from the buffer
+   label; WGSL identifiers cannot contain hyphens/spaces. A kebab label like `demo-particles` produced
+   `struct demo-particlesStruct {` → parse error. Fix: the module sanitizes labels to `[A-Za-z0-9_]`.
+
+**Outcome:** struct compute (write + read in a compute `Fn`) compiles and runs **error-free on
+r0.185**. This was the single biggest Phase-2 risk (MLS-MPM is entirely struct compute) and it is now
+cleared — Phase 2 can proceed. Implication for Phase 2: pass WGSL-safe (camelCase/underscore) labels to
+every StructuredArray, and apply the same `struct()` clean-map rule when porting mls-mpm.ts.
+
 ## ADR-A9 — Ship only referenced assets
 `src/assets/` has many alternate HDR/EXR/texture files. Only those referenced by `Scenery` defaults
 ship in `labs/aurora/modules/assets/`; the rest are dropped and recorded in provenance.
