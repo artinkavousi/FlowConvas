@@ -6,8 +6,13 @@ full creative tool (audio reactivity + AI music analysis, multi-pass postFX, gla
 multi-mode particle renderer, force fields, emitters, boundaries, a glassmorphic Tweakpane UI).
 
 This is a **Mode B** conversion (full project → reusable canonical modules **+** a faithful Lab
-replica), run through `/artinos-module` and the converter workflow (`spec/converter-workflow.md`,
-master guideline `ARTINPRD MODULE CONVERTER.md`).
+replica), run through `/artinos-module` and the converter pipeline (`docs/converter-pipeline.md`,
+single source of truth; contract in `docs/module-and-lab-standards.md`).
+
+> ⚠️ **Canonical plan moved.** Per the 11-step pipeline (step 7), the authoritative, blind-executable
+> blueprint now lives at **[`spec/conversions/aurora/blueprint.md`](../conversions/aurora/blueprint.md)**.
+> The files below are the earlier draft (analysis + ADR log) kept for reference — when they differ from
+> the blueprint, **the blueprint wins**.
 
 | Doc | What it is |
 |-----|-----------|

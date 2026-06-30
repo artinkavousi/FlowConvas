@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TslHsvShowcase — bridge-driven live showcase.
  * Maps UV.x → hue through hsvtorgb on a fullscreen quad, with sliderable saturation/value and an

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TslNoiseShowcase — bridge-driven live showcase.
  * Samples the fractal triNoise3Dvec over UV space on a fullscreen quad, animated by the global

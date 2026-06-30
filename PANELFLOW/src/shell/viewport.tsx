@@ -29,6 +29,7 @@ import { createRendererHost, DisposeScope } from './ThreeRuntime';
 import { detect, canRun, type BackendClass } from '@/WebGPUCapabilities';
 import { token } from '@/studio-theme';
 import { useGraphStore } from '@/graph/graph-store';
+import { StatsHud } from '@/panels/inspector/widgets/StatsHud';
 
 export default function Viewport() {
   const hostRef = useRef<HTMLDivElement | null>(null);
@@ -341,7 +342,12 @@ export default function Viewport() {
           if (sceneSettings.ssr) {
               const { ssr } = await import('three/examples/jsm/tsl/display/SSRNode.js');
               const { vec4 } = await import('three/tsl');
-              const ssrPass = ssr(combinedNode, scenePass.getTextureNode('depth'), scenePass.getTextureNode('normal'), float(1.0), float(0.5), camera);
+              // r185: ssr() takes (color, depth, normal, options) — metalness/roughness/camera moved into options.
+              const ssrPass = ssr(combinedNode, scenePass.getTextureNode('depth') as any, scenePass.getTextureNode('normal') as any, {
+                  metalnessNode: float(1.0),
+                  roughnessNode: float(0.5),
+                  camera,
+              });
               combinedNode = vec4(combinedNode.rgb.add((ssrPass as any).getTextureNode().rgb), combinedNode.a);
           }
           if (sceneSettings.bloom) {
@@ -452,6 +458,7 @@ export default function Viewport() {
 
   return (
     <div ref={hostRef} style={hostStyle}>
+      {status === 'running' && <StatsHud corner="top-left" />}
       {status !== 'running' && (
         <div style={overlay}>
           {status === 'init' ? 'initializing renderer…' : 'WebGPU/WebGL2 unavailable in this browser'}

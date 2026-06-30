@@ -11,12 +11,15 @@
 
 1. `AGENTS.md` - universal operating rules: preserve identity, build real software, verify with proof.
 2. `MEMORY.md` - current repo-specific memory and boundaries.
-3. `STUDIO/AGENTS.md` - Studio module, registry, converter, and library-sync rules.
-4. `spec/decisions.md` - accepted ADRs; append-only source of architectural decisions.
-5. Task-specific docs:
-   - `ARTINOS-PRD.md` and `spec/prd.md` for product intent.
-   - `spec/plan.md` and `spec/tasks.md` for MVP plan and current task gates.
-   - `spec/converter-workflow.md` for converting external sources into modules.
+3. `docs/README.md` - the canonical documentation hub (map + reading order).
+4. `STUDIO/AGENTS.md` - Studio module, registry, converter, and library-sync rules.
+5. `spec/decisions.md` - accepted ADRs; append-only source of architectural decisions.
+6. Task-specific docs (all under `docs/`):
+   - `docs/product.md` for product intent, registry schema, and roadmap.
+   - `docs/architecture.md` for system design, boundaries, and verification gates.
+   - `docs/converter-pipeline.md` for converting sources into modules + Labs (single source of truth).
+   - `docs/module-and-lab-standards.md` for the module/Lab contract and promotion.
+   - `docs/blueprinting.md` for the mandatory converter blueprint (step 7).
    - `PANELFLOW/README.md`, `PANELFLOW/DOCS/PANELFLOW_PRD.md`, and
      `PANELFLOW/DOCS/PANELFLOW_IMPLEMENTATION_GUIDE.md` for PANELFLOW package work.
 
@@ -29,7 +32,7 @@
 - ARTINOS consumes PANELFLOW and builds ARTINOS-specific interface, modules, registry, showcases, branding, and workflows on top of it.
 - Do not hardcode ARTINOS assumptions into PANELFLOW. Host-specific branding/content belongs in `STUDIO`, not the package.
 - PANELFLOW files and components should be copy-pasteable into other React projects with minimal dependency pain.
-- ARTINOS modules should also stay copy-paste portable: compact, self-contained, with listed dependencies and no unnecessary lock-in to ARTINOS shell logic. New conversions use `<Feature>.module.ts(x)` for runtime source, `<Feature>.showcase.tsx` for the bridge-driven showcase, and `<Feature>.meta.ts` for the registry entry.
+- ARTINOS modules should also stay copy-paste portable: compact, self-contained, with listed dependencies and no unnecessary lock-in to ARTINOS shell logic. New conversions use a clean `<Feature>.ts(x)`/`.js` runtime (no `.module` infix — `.js` for untyped Three/TSL), `<Feature>.showcase.tsx` for the bridge-driven showcase, and `<Feature>.meta.ts` for the registry entry.
 - Full project conversions must produce both canonical reusable modules under `STUDIO/src/modules/<category>/` and a faithful Lab under `STUDIO/src/labs/<id>/` with local `modules/` snapshots plus grouped `local/` project modules.
 - The current preferred UX model is: component/project runs in the main viewport; Scene Settings, Inspector, Library, and Lab Capsules are the main dock panels; graph/tools are secondary panels.
 - The Inspector is the user-facing home for active component/project controls and information. Generated auto-control panels can exist internally, but should not clutter the rail unless explicitly exposed.
@@ -114,7 +117,7 @@ Never return a fresh fallback object inside the selector, such as `s.componentVa
 
 ```txt
 STUDIO/src/modules/<category>/
-  <Feature>.module.tsx
+  <Feature>.ts(x) | .js   # runtime source (no .module infix; .js for untyped Three/TSL)
   <Feature>.showcase.tsx
   <Feature>.meta.ts
 ```
@@ -140,7 +143,7 @@ STUDIO/src/modules/<category>/
 - Port directly first. Preserve source logic, visuals, interactions, animation, physics, shaders, materials, presets, and naming as much as possible.
 - Make only minimum compatibility edits for imports, paths, types, styling hooks, and integration.
 - If the source cannot be found or is incompatible, report `BLOCKED` with evidence instead of inventing a generic replacement.
-- Use `spec/converter-workflow.md` for accepted inputs, deliverables, module mapping, and validation.
+- Use `docs/converter-pipeline.md` for the 11-step pipeline, accepted inputs, deliverables, module mapping, and validation; write a `docs/conversions/<id>-conversion-plan.md` (Overview section first) before any code.
 - External conversions must include a fidelity note and report deviations.
 - The WebGPU Fluid Simulation source was provided under `REF/WebGpu-Fluid-Simulation-master` and was ported as the `webgpu-fluid` module.
 
@@ -216,14 +219,15 @@ See `spec/decisions.md` for full ADR text. Current accepted highlights:
 
 ## 11. Documentation Map
 
+- `docs/README.md` - canonical documentation hub (map + reading order); the rest of `docs/` is canonical.
 - `AGENTS.md` - universal agent constitution and completion gate.
 - `MEMORY.md` - this repo-specific memory index.
-- `ARTINOS-PRD.md` - full product vision.
-- `spec/prd.md` - scoped implementation PRD.
-- `spec/plan.md` - architecture, milestones, risks, verification strategy.
-- `spec/tasks.md` - Studio MVP task breakdown and current completion state.
-- `spec/decisions.md` - append-only ADR log.
-- `spec/converter-workflow.md` - conversion procedure.
+- `docs/product.md` - full product vision, requirements, registry schema, roadmap.
+- `docs/architecture.md` - system design, STUDIO/PANELFLOW boundaries, registry, control pipeline, gates.
+- `docs/converter-pipeline.md` - the 11-step module converter (single source of truth).
+- `docs/module-and-lab-standards.md` - module/Lab contract, naming, categories, provenance, promotion.
+- `docs/blueprinting.md` + `docs/templates/blueprint.template.md` - converter step 7 blueprint artifact.
+- `spec/decisions.md` - append-only ADR log. `docs/conversions/<id>-conversion-plan.md` - per-conversion blueprints (Overview-first).
 - `STUDIO/AGENTS.md` - Studio-specific module/registry rules.
 - `PANELFLOW/README.md` - package usage and public API.
 - `PANELFLOW/DOCS/PANELFLOW_PRD.md` - package product requirements.

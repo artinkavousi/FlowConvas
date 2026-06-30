@@ -9,15 +9,15 @@ import path from 'path';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: {
-      '@artinos/panelflow': path.resolve(__dirname, '../PANELFLOW/src/export.ts'),
-      '@': path.resolve(__dirname, '../PANELFLOW/src'),
+    alias: [
+      { find: '@artinos/panelflow', replacement: path.resolve(__dirname, '../PANELFLOW/src/export.ts') },
+      { find: '@', replacement: path.resolve(__dirname, '../PANELFLOW/src') },
       // Consuming PANELFLOW *source* across the workspace boundary can load React
       // twice (app copy + a pre-bundled copy), which breaks useSyncExternalStore
       // ("getSnapshot should be cached"). Pin every importer to the one root copy.
-      react: path.resolve(__dirname, '../node_modules/react'),
-      'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),
-    },
+      { find: 'react', replacement: path.resolve(__dirname, '../node_modules/react') },
+      { find: 'react-dom', replacement: path.resolve(__dirname, '../node_modules/react-dom') },
+    ],
     dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: { include: ['react', 'react-dom', 'react/jsx-runtime'] },

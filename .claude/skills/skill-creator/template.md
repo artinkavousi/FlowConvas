@@ -45,7 +45,7 @@ allowed_tools:
 **Module folder contract**
 ```
 STUDIO/src/modules/<category>/
-  <Feature>.module.tsx    # self-contained runtime/component source
+  <Feature>.ts(x) / .js   # self-contained runtime/component source (no .module infix)
   <Feature>.showcase.tsx  # useBridgeStore raw slice, default OUTSIDE the selector (ADR-13)
   <Feature>.meta.ts       # default export: ArtinosModule, id === schema.id
 ```
@@ -60,4 +60,12 @@ control driving it, zero console errors. Conversions also report side-by-side fi
 ```
 Discover existing modules first (reuse over rebuild): Agent panel · MCP `search_modules`/`get_module`
 (`npm run mcp -w STUDIO`) · graph spotlight (`module/<id>` nodes).
+```
+
+**Conversion blueprint line** (for any skill that ports/converts a source)
+```
+Write `docs/conversions/<id>-conversion-plan.md` FIRST (Overview section first) — granular enough for a
+blind downstream agent (exact files, function signatures, render details, task checklist). Build only after.
+Spec: `docs/blueprinting.md` · template: `docs/templates/blueprint.template.md` ·
+pipeline: `docs/converter-pipeline.md`.
 ```

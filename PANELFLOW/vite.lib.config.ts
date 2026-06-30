@@ -9,6 +9,9 @@ const external = [
   ...Object.keys(pkg.peerDependencies || {}),
   ...Object.keys(pkg.dependencies || {}),
   'react/jsx-runtime',
+  // three is provided by the host app (shared renderer instance); never bundle it
+  // or its subpaths (three/webgpu, three/tsl, three/addons/*).
+  /^three(\/|$)/,
 ];
 
 export default defineConfig({

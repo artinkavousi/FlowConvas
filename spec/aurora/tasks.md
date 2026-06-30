@@ -15,22 +15,22 @@ rules for every task (do not restate per task):
 
 ---
 
-## Phase 1 — Universal cores
+## Phase 1 — Universal cores ✅ DONE (check-registry + lint green; TSL Noise live-confirmed)
 
-- [ ] **T1.1 `webgpu/tsl-structured-array`** — port `physic/structuredarray.ts`. Showcase: a tiny TSL
-  compute kernel that writes a struct field per index and reads it back into a visible grid (NOT MPM).
-- [ ] **T1.2 `math/tsl-noise`** — port `physic/noise.ts`. Showcase: fullscreen TSL quad sampling the
-  fractal noise; control = scale/octaves.
-- [ ] **T1.3 `math/tsl-hsv`** — port `physic/hsv.ts`. Showcase: HSV→RGB sweep swatch; control = hue.
-- [ ] **T1.4 `core/app-init-pipeline`** — port `APP/pipeline.ts` (`AppPipeline`, `PipelineReporter`).
-  No Three dep. Showcase: 3 fake weighted async steps driving a progress bar + step log.
-- [ ] **T1.5 `performance/adaptive-performance-manager`** — port `APP/performance.ts`. No Three dep.
-  Showcase: a slider injects synthetic FPS; UI shows the tier (high/medium/low) + reason.
-- [ ] **T1.6 `input/pointer-raycast-force`** — extract the pointer→ray→plane-intersect→force model
-  from `APP.ts` (`onMouseMove`, `raycaster`, `plane`) and the `setMouseRay(origin,dir,pos)` contract.
-  Showcase: a dot follows the pointer's plane intersection on a flat plane; control = plane depth.
-- [ ] **T1.7 `math/tsl-colormap-palette`** — port `visuals/colorpalette.ts`. Showcase: apply each
-  named colormap to a 0..1 ramp quad; control = palette enum.
+- [x] **T1.1 `webgpu/tsl-structured-array`** — ported `physic/structuredarray.ts`. Showcase: struct
+  compute (write+read) + GPU points. Compat fixes for three r0.185 (see decisions ADR-A10): clean
+  `struct()` map + WGSL-safe label sanitize. Struct compute runs error-free; point cloud visibility
+  unconfirmed in VM preview (verify on hardware).
+- [x] **T1.2 `math/tsl-noise`** — ported `physic/noise.ts`. Fullscreen TSL noise quad. **Live-confirmed
+  rendering on WebGPU, zero console errors.**
+- [x] **T1.3 `math/tsl-hsv`** — ported `physic/hsv.ts`. Hue-sweep quad (same proven pattern as Noise).
+- [x] **T1.4 `core/app-init-pipeline`** — ported `APP/pipeline.ts`. Named `AppInitPipeline.ts` (NOT
+  `.module.ts` — that depth collides with the registry's legacy entry glob). Progress-bar showcase.
+- [x] **T1.5 `performance/adaptive-performance-manager`** — ported `APP/performance.ts` (as `.ts`).
+  Synthetic-FPS tier showcase.
+- [x] **T1.6 `input/pointer-raycast-force`** — extracted from `APP.ts` onMouseMove/raycaster/plane +
+  setMouseRay contract. WebGL follower-dot showcase.
+- [x] **T1.7 `math/tsl-colormap-palette`** — ported `visuals/colorpalette.ts`. Palette-strip showcase.
 
 ## Phase 2 — Solver core + minimal render
 
@@ -53,13 +53,17 @@ rules for every task (do not restate per task):
 
 ## Phase 3 — Physics dressing
 
-- [ ] **T3.1 `physics/particles/particle-force-fields`** — port `physic/forcefields.ts`
-  (attractor/repeller/vortex). Showcase: fields acting on a basic point cloud; control = field type +
-  strength.
+> T3.1 + T3.3 were **pulled forward into Phase 2** because the MLS-MPM solver hard-imports them
+> (`calculateForceFieldForce`, `MaterialType`/`getMaterialColor`/`calculateMaterialStress`). Both
+> built + gated (check-registry + lint green, load with zero console errors).
+
+- [x] **T3.1 `physics/particles/particle-force-fields`** — ported `physic/forcefields.ts` (8 field
+  types, 4 falloffs, 7 presets, GPU evaluator + CPU manager). Showcase drives one field on a plain
+  GPU point cloud (no MLS-MPM). Method-chained TSL, no operator rewrite.
 - [ ] **T3.2 `physics/particles/particle-emitters`** — port `physic/emitters.ts`. Showcase: emit into
   a basic buffer; control = rate + emitter shape.
-- [ ] **T3.3 `physics/fluid/mpm-material-manager`** — port `physic/materials.ts`. Showcase: switch MPM
-  material presets on the Phase-2 solver showcase; control = material enum.
+- [x] **T3.3 `physics/fluid/mpm-material-manager`** — ported `physic/materials.ts` (8 types, 11
+  presets, GPU stiffness/viscosity/stress/color lookups + CPU registry). Swatch showcase.
 
 ## Phase 4 — Look
 

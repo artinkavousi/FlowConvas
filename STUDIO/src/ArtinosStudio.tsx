@@ -17,6 +17,7 @@ import {
   initializeBridgeDefaults,
   registerPanel,
   usePanelOSStore,
+  installInspectorHook,
 } from '@artinos/panelflow';
 import { StudioViewport } from './shell/StudioViewport';
 import { useStudioStore } from './studio-store';
@@ -33,6 +34,10 @@ registerPanel(LibraryPanel);
 registerPanel(ConsolePanel);
 registerPanel(AgentPanel);
 registerPanel(LabCapsulesPanel);
+
+// Auto-attach the headless inspector to renderers that modules create themselves
+// (each ARTINOS module owns its own WebGPURenderer), feeding the Telemetry panel.
+installInspectorHook();
 
 /**
  * Loads the active module: registers its control schema, seeds bridge defaults,
@@ -74,7 +79,7 @@ function StudioInner() {
   // Keep the dock ordered by workflow: Inspector, Labs, Library, Scene.
   useEffect(() => {
     const panelOS = usePanelOSStore.getState();
-    panelOS.setPanelLayout(['inspector', 'lab-capsules', 'library', 'scene-settings'], 'lab-capsules');
+    panelOS.setPanelLayout(['inspector', 'lab-capsules', 'library', 'scene-settings', 'telemetry'], 'lab-capsules');
   }, []);
 
   return (

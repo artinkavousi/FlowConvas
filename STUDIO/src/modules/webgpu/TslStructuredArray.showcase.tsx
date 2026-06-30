@@ -35,13 +35,14 @@ export default function TslStructuredArrayShowcase() {
     camera.position.z = 1;
 
     // Compute store: the structured buffer (this module under test).
-    const particles = new StructuredArray({ position: 'vec3', color: 'vec3' }, COUNT, 'demo-particles');
+    const particles = new StructuredArray({ position: 'vec3', color: 'vec3' }, COUNT, 'demoParticles');
     // Plain render buffers (proven render path for this three version).
     const renderPos = instancedArray(COUNT, 'vec3');
     const renderCol = instancedArray(COUNT, 'vec3');
 
     const amp = uniform(amplitude);
     const speedU = uniform(speed);
+    const sizeU = uniform(pointSize);
 
     // init: fill the struct on a centered grid, color by grid coords.
     const initKernel = Fn(() => {
@@ -75,10 +76,10 @@ export default function TslStructuredArrayShowcase() {
     geometry.instanceCount = COUNT;
 
     const material = new THREE.PointsNodeMaterial({ transparent: true });
-    material.size = pointSize;
     material.positionNode = Fn(() => renderPos.element(instanceIndex))();
     material.colorNode = Fn(() => vec4(renderCol.element(instanceIndex), 1))();
-    apiRef.current = { amp, speed: speedU, setSize: (px) => { material.size = px; material.needsUpdate = true; } };
+    material.sizeNode = Fn(() => sizeU)();
+    apiRef.current = { amp, speed: speedU, setSize: (px) => { sizeU.value = px; } };
 
     const points = new THREE.Points(geometry, material);
     points.frustumCulled = false;

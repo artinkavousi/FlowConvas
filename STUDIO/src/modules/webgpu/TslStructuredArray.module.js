@@ -42,11 +42,22 @@ export class StructuredArray {
     this.structSize = 0;
     this.layout = this._parse(layout);
 
-    this.structNode = struct(this.layout);
+    // three r0.185's struct() expects a raw { name: 'type' } map (see three examples), NOT the
+    // fully-parsed layout (objects with size/alignment/offset) that the r0.176 source passed —
+    // passing the parsed objects yields invalid WGSL. Build a clean type map here. (Compat
+    // deviation vs ref/AURORA; atomics are still applied post-hoc via setAtomic().)
+    const structDef = {};
+    for (const key of Object.keys(this.layout)) {
+      structDef[key] = this.layout[key].type;
+    }
+    this.structNode = struct(structDef);
     this.floatArray = new Float32Array(this.structSize * this.length);
     this.intArray = new Int32Array(this.floatArray.buffer);
+    // three derives the WGSL struct type name from the buffer name, and WGSL identifiers may not
+    // contain hyphens/spaces — sanitize so any label (e.g. a kebab-case id) stays valid.
+    const safeLabel = String(label ?? 'structuredArray').replace(/[^A-Za-z0-9_]/g, '_');
     const gpuArray = instancedArray(this.floatArray, this.structNode);
-    this.buffer = typeof gpuArray.setName === 'function' ? gpuArray.setName(label) : gpuArray.label(label);
+    this.buffer = typeof gpuArray.setName === 'function' ? gpuArray.setName(safeLabel) : gpuArray.label(safeLabel);
   }
 
   /** Enable/disable atomic operations for a specific element. */

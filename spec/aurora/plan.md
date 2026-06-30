@@ -1,8 +1,8 @@
 # AURORA → ARTINOS — conversion plan
 
 > Mode B. Produces **~19 canonical reusable modules** + **1 faithful Lab** (`labs/aurora/`). Follows
-> `spec/converter-workflow.md` and `ARTINPRD MODULE CONVERTER.md`. Port directly, preserve identity
-> (FR-15). Each module proves reuse via a standalone showcase or is folded back in.
+> `docs/converter-pipeline.md` (single source of truth) and `docs/module-and-lab-standards.md`. Port
+> directly, preserve identity (FR-15). Each module proves reuse via a standalone showcase or is folded back in.
 
 ## 1. Decomposition principle applied
 
@@ -137,7 +137,7 @@ Each phase ends GREEN on the DoD (§6) before the next begins.
 
 ## 6. Definition of Done (every module + the Lab)
 
-Per `spec/converter-workflow.md` §6:
+Per `docs/converter-pipeline.md` §8 (Validation — Definition of Done):
 - `npm run check-registry -w STUDIO` green (complete entry, `id === schema.id`, `sourcePath`
   resolves, schema valid, no duplicate id).
 - `npm run lint -w STUDIO` green (`tsc --noEmit`; Three stays in untyped `*.module.js`, typed

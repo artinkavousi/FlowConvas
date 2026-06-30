@@ -7,7 +7,7 @@ export interface IconRailProps {
   side?: 'left' | 'right';
 }
 
-const CORE_ORDER = ['inspector', 'lab-capsules', 'library', 'scene-settings', 'graph'];
+const CORE_ORDER = ['inspector', 'lab-capsules', 'library', 'scene-settings', 'telemetry', 'graph'];
 const STUDIO_ORDER = ['agent', 'console'];
 
 function sortByOrder(items: PanelDefinition[], order: string[]) {

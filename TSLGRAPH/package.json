@@ -1,0 +1,59 @@
+{
+  "name": "@artinos/tslgraph-editor",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Self-contained local TSL Graph editor snapshot and integration helpers.",
+  "bin": {
+    "tslgraph-editor": "./bin/serve.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/browser.d.ts",
+      "default": "./src/browser.js"
+    },
+    "./browser": {
+      "types": "./src/browser/index.d.ts",
+      "default": "./src/browser/index.js"
+    },
+    "./node": {
+      "types": "./src/node.d.ts",
+      "default": "./src/node.js"
+    },
+    "./react": {
+      "types": "./src/react/index.d.ts",
+      "default": "./src/react/index.js"
+    },
+    "./three-inspector": "./three-inspector/index.js",
+    "./static": "./static/index.html",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "examples",
+    "scripts",
+    "src",
+    "static",
+    "three-inspector",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "node ./bin/serve.js --port 4177",
+    "serve": "node ./bin/serve.js",
+    "verify": "npm run verify:assets && node ./scripts/verify-package.js",
+    "verify:assets": "node ./scripts/verify-assets.js",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "peerDependencies": {
+    "react": ">=18 || >=19",
+    "three": ">=0.185.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
+  },
+  "license": "UNLICENSED"
+}
